@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          MARKER                          			 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
+    <extension 
+   		id="testcase.de.jcup.eclipse.commons.task"
+    	point="org.eclipse.core.resources.markers"
+    	name="Testcase for eclipse.commons TodoTaskSupport">
+        <super type="org.eclipse.core.resources.taskmarker"/>
+        <super type="org.eclipse.core.resources.textmarker"/>
+        <persistent value="true"/>
+    </extension>
+    
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          VIEWS                          			 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
+    <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="Eclipse commons Examples"
+            id="testcase.de.jcup.eclipse.commons">
+      </category>
+      <view
+            name="Eclipse commons Testcase View"
+            icon="icons/sample.png"
+            category="testcase.de.jcup.eclipse.commons"
+            class="testcase.de.jcup.eclipse.commons.TestcaseView"
+            id="testcase.de.jcup.eclipse.commons.TestcaseView">
+      </view>
+   </extension>
+   
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          EDITORS                         			 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
+    <extension
+         point="org.eclipse.ui.editors">
+      <editor
+      		name="Testcase Editor"
+            extensions="testcase"
+            icon="icons/sample.png"
+            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            class="testcase.de.jcup.eclipse.commons.TestcaseEditor"
+            default="true"
+            id="testcase.de.jcup.eclipse.commons.TestcaseEditor">
+      </editor>
+   </extension>
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          PREFERENCES                       			 -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
+    <extension
+      point = "org.eclipse.ui.preferencePages">
+      <page
+         id="testcase.de.jcup.eclipse.commons.TestcaseTodoTaskPreferencePage"
+         class="testcase.de.jcup.eclipse.commons.TestcaseTaskTagsPreferencePage"
+         name="Testcase preference page for TODOs"
+         >
+      </page>
+    </extension>
+    <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="testcase.de.jcup.eclipse.commons.TestcaseTaskTagsPreferenceInitializer">
+      </initializer>
+   </extension>
+  </plugin>
