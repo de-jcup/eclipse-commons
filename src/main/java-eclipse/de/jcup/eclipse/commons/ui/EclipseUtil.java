@@ -46,6 +46,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 
+import de.jcup.eclipse.commons.PluginContextProvider;
+
 public class EclipseUtil {
 
 	private static Font monoFont;
@@ -140,19 +142,17 @@ public class EclipseUtil {
 	 * is used instead
 	 * 
 	 * @param path
-	 * @param mainActivator 
-	 * @param pluginId
-	 *            - plugin id to identify which plugin image should be loaded
+	 * @param provider 
 	 * @return image
 	 */
-	public static Image getImage(String path, AbstractUIPlugin mainActivator, String pluginId) {
-		ImageRegistry imageRegistry = getImageRegistry(mainActivator);
+	public static Image getImage(String path, PluginContextProvider provider) {
+		ImageRegistry imageRegistry = getImageRegistry(provider);
 		if (imageRegistry == null) {
 			return null;
 		}
 		Image image = imageRegistry.get(path);
 		if (image == null) {
-			ImageDescriptor imageDesc = createImageDescriptor(path, pluginId);
+			ImageDescriptor imageDesc = createImageDescriptor(path, provider.getPluginID());
 			image = imageDesc.createImage();
 			if (image == null) {
 				image = PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
@@ -182,13 +182,13 @@ public class EclipseUtil {
 		getSafeDisplay().syncExec(runnable);
 	}
 
-	public static void throwCoreException(String message, String pluginId) throws CoreException {
-		throw new CoreException(new Status(IStatus.ERROR, pluginId, message));
+	public static void throwCoreException(String message, PluginContextProvider provider) throws CoreException {
+		throw new CoreException(new Status(IStatus.ERROR, provider.getPluginID(), message));
 
 	}
 
-	public static void throwCoreException(String message, Exception e, String pluginId) throws CoreException {
-		throw new CoreException(new Status(IStatus.ERROR, pluginId, message, e));
+	public static void throwCoreException(String message, Exception e, PluginContextProvider provider) throws CoreException {
+		throw new CoreException(new Status(IStatus.ERROR, provider.getPluginID(), message, e));
 
 	}
 
@@ -226,7 +226,11 @@ public class EclipseUtil {
 		return new Font(device, data);
 	}
 
-	private static ImageRegistry getImageRegistry(AbstractUIPlugin mainActivator) {
+	private static ImageRegistry getImageRegistry(PluginContextProvider provider) {
+		if (provider == null) {
+			return null;
+		}
+		AbstractUIPlugin mainActivator = provider.getActivator();
 		if (mainActivator == null) {
 			return null;
 		}
@@ -260,12 +264,12 @@ public class EclipseUtil {
 
 	}
 
-	public static void logError(String error, Throwable t, String pluginId, AbstractUIPlugin mainActivator) {
-		getLog(mainActivator).log(new Status(IStatus.ERROR, pluginId, error, t));
+	public static void logError(String error, Throwable t, PluginContextProvider provider) {
+		getLog(provider).log(new Status(IStatus.ERROR, provider.getPluginID(), error, t));
 	}
 
-	private static ILog getLog(AbstractUIPlugin mainActivator) {
-		ILog log =mainActivator.getLog();
+	private static ILog getLog(PluginContextProvider provider) {
+		ILog log = provider.getActivator().getLog();
 		return log;
 	}
 

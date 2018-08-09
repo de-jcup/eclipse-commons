@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
 <jardesc>
-    <jar path="eclipse-commons/build/de-jcup-eclipse-commons-0.2.0.jar"/>
+    <jar path="eclipse-commons/build/de-jcup-eclipse-commons.jar"/>
     <options buildIfNeeded="true" compress="true" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="false" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
