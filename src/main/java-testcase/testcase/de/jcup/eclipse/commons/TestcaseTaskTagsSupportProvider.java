@@ -1,17 +1,13 @@
 package testcase.de.jcup.eclipse.commons;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.eclipse.core.resources.IFile;
 
 import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvider;
 
 public class TestcaseTaskTagsSupportProvider extends AbstractConfigurableTaskTagsSupportProvider{
-	private List<String> fileextensions = new ArrayList<>();
-									// file and open it
 
 	public TestcaseTaskTagsSupportProvider(TestcaseActivator plugin) {
 		super(plugin, plugin.getPluginId());
-		fileextensions.add("testcase"); // to test we must add a "xyz.testcase"
 	}
 
 	@Override
@@ -25,8 +21,8 @@ public class TestcaseTaskTagsSupportProvider extends AbstractConfigurableTaskTag
 	}
 
 	@Override
-	public List<String> getTodoTaskFileExtensions() {
-		return fileextensions;
+	public boolean isFileHandled(IFile file) {
+		return file.getFileExtension().equals("testcase");
 	}
 
 }
