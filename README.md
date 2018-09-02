@@ -3,7 +3,7 @@
 A library containing reuseable eclipse solutions  
 
 ## Current version
-0.3.1
+0.3.2
 
 ## way to build
 - currently build-library.jardesc is used (ugly but it works)

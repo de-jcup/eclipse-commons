@@ -125,7 +125,7 @@ public class TaskTagsSupport implements IResourceChangeListener {
 				noResourceChangedScan(context, (IContainer) member);
 			} else if (member instanceof IFile) {
 				IFile file = (IFile) member;
-				if (!isFileExtensionHandled(file)) {
+				if (!provider.isFileHandled(file)) {
 					continue;
 				}
 				if (!provider.isTodoTaskSupportEnabled()) {
@@ -357,9 +357,8 @@ public class TaskTagsSupport implements IResourceChangeListener {
 			return;
 		}
 		IFile file = (IFile) resource;
-		boolean isFileExtensionHandled = isFileExtensionHandled(file);
 
-		if (!isFileExtensionHandled) {
+		if (!provider.isFileHandled(file)) {
 			return;
 		}
 		try {
@@ -367,18 +366,6 @@ public class TaskTagsSupport implements IResourceChangeListener {
 		} catch (CoreException e) {
 			provider.logError("Cannot visit resource:" + file, e);
 		}
-	}
-
-	protected boolean isFileExtensionHandled(IFile file) {
-		String fileExtension = file.getFileExtension();
-		List<String> fileExtensions = provider.getTodoTaskFileExtensions();
-		for (String supportedFileExtension : fileExtensions) {
-			boolean isFileExtensionHandled = supportedFileExtension.equals(fileExtension);
-			if (isFileExtensionHandled) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	private void handleDelta(TaskTagContext context, IResourceDelta delta) {
@@ -403,6 +390,8 @@ public class TaskTagsSupport implements IResourceChangeListener {
 
 		public void logError(String error, Throwable t);
 
+		public boolean isFileHandled(IFile file);
+
 		/**
 		 * @return todo task definitions. Implementations decide if this is
 		 *         configurable by users or a fixed list...
@@ -418,12 +407,6 @@ public class TaskTagsSupport implements IResourceChangeListener {
 		boolean isTodoTaskSupportEnabled();
 
 		boolean isLineCheckforTodoTaskNessary(String line, int lineNumber, String[] lines);
-
-		/**
-		 * @return the file extensions (without a dot! e.g. "yaml" to handle all
-		 *         "*.yaml" files) which are inspected for _TODO_ analyzing
-		 */
-		List<String> getTodoTaskFileExtensions();
 
 		/**
 		 * @return marker ID which is used for TODOs
