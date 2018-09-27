@@ -5,4 +5,7 @@ This is an example...
 
 TESTME here has no markers
 
-! TESTME also no markers 
+! TESTME also no markers
+word1 // textfile tooltip
+word2 // htmlfile tooltip
+word3 // no tooltip defined

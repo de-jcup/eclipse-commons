@@ -32,6 +32,7 @@ import de.jcup.eclipse.commons.WhitespaceWordEndDetector;
 import de.jcup.eclipse.commons.WordEndDetector;
 import de.jcup.eclipse.commons.ui.ColorUtil;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
+import de.jcup.eclipse.commons.ui.OpenLinksInExternalBrowserListener;
 import de.jcup.eclipse.commons.ui.ReducedBrowserInformationControl;
 
 public class DocumentKeywordTextHover implements ITextHover, ITextHoverExtension {
@@ -52,7 +53,7 @@ public class DocumentKeywordTextHover implements ITextHover, ITextHoverExtension
 	@Override
 	public IInformationControlCreator getHoverControlCreator() {
 		if (creator == null) {
-			creator = new GradleTextHoverControlCreator();
+			creator = new DocumentKeywordTextHoverControlCreator();
 		}
 		return creator;
 	}
@@ -109,6 +110,7 @@ public class DocumentKeywordTextHover implements ITextHover, ITextHoverExtension
 				word = sb.toString();
 			}
 		}
+		/* FIXME ATR, 27.09.2018: add interface wordreducer and make a generic approach here! was copied from asciidoctor editor! */
 		/* reduce words like include::xyz to 'include::' */
 		/* a part like :icons: will not be influenced */
 		int indexOf = word.indexOf("::");
@@ -197,12 +199,13 @@ public class DocumentKeywordTextHover implements ITextHover, ITextHoverExtension
 		return new Region(offset, 0);
 	}
 
-	private class GradleTextHoverControlCreator implements IInformationControlCreator {
+	private class DocumentKeywordTextHoverControlCreator implements IInformationControlCreator {
 
 		@Override
 		public IInformationControl createInformationControl(Shell parent) {
 			if (ReducedBrowserInformationControl.isAvailableFor(parent)) {
 				ReducedBrowserInformationControl control = new ReducedBrowserInformationControl(parent);
+				control.setListener(new OpenLinksInExternalBrowserListener());
 				return control;
 			} else {
 				return new DefaultInformationControl(parent, true);

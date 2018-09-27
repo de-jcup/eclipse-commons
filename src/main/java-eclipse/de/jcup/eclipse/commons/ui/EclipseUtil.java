@@ -43,6 +43,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.browser.IWebBrowser;
+import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 
@@ -142,7 +144,7 @@ public class EclipseUtil {
 	 * is used instead
 	 * 
 	 * @param path
-	 * @param provider 
+	 * @param provider
 	 * @return image
 	 */
 	public static Image getImage(String path, PluginContextProvider provider) {
@@ -177,7 +179,7 @@ public class EclipseUtil {
 	public static void safeAsyncExec(Runnable runnable) {
 		getSafeDisplay().asyncExec(runnable);
 	}
-	
+
 	public static void safeSyncExec(Runnable runnable) {
 		getSafeDisplay().syncExec(runnable);
 	}
@@ -187,7 +189,8 @@ public class EclipseUtil {
 
 	}
 
-	public static void throwCoreException(String message, Exception e, PluginContextProvider provider) throws CoreException {
+	public static void throwCoreException(String message, Exception e, PluginContextProvider provider)
+			throws CoreException {
 		throw new CoreException(new Status(IStatus.ERROR, provider.getPluginID(), message, e));
 
 	}
@@ -202,25 +205,26 @@ public class EclipseUtil {
 		}
 		return message;
 	}
-	
-	public static final Font getMonospaceFont(){
-		if (monoFont==null){
+
+	public static final Font getMonospaceFont() {
+		if (monoFont == null) {
 			monoFont = createMonospaceFont();
 		}
 		return monoFont;
 	}
-	
+
 	private static Font createMonospaceFont() {
-//		to get monospaced font is not really simple, 
-//		see https://bugs.eclipse.org/bugs/show_bug.cgi?id=48055
-//		see also https://bugs.eclipse.org/bugs/attachment.cgi?id=238603
-		int size=14;
+		// to get monospaced font is not really simple,
+		// see https://bugs.eclipse.org/bugs/show_bug.cgi?id=48055
+		// see also https://bugs.eclipse.org/bugs/attachment.cgi?id=238603
+		int size = 14;
 		int style = SWT.None;
 		List<FontData> fontDataList = new ArrayList<FontData>();
-		fontDataList.add(new FontData("Consolas",size, style));  // windows + general
-		fontDataList.add(new FontData("Monospace",size, style));  // linux_gtk
-		fontDataList.add(new FontData("adobe-courier",size, style));// linux
-		fontDataList.add(new FontData("Courier New",size, style));
+		fontDataList.add(new FontData("Consolas", size, style)); // windows +
+																	// general
+		fontDataList.add(new FontData("Monospace", size, style)); // linux_gtk
+		fontDataList.add(new FontData("adobe-courier", size, style));// linux
+		fontDataList.add(new FontData("Courier New", size, style));
 		Display device = EclipseUtil.getSafeDisplay();
 		FontData[] data = fontDataList.toArray(new FontData[fontDataList.size()]);
 		return new Font(device, data);
@@ -265,6 +269,9 @@ public class EclipseUtil {
 	}
 
 	public static void logError(String error, Throwable t, PluginContextProvider provider) {
+		if (provider==null){
+			return;
+		}
 		getLog(provider).log(new Status(IStatus.ERROR, provider.getPluginID(), error, t));
 	}
 
@@ -273,4 +280,18 @@ public class EclipseUtil {
 		return log;
 	}
 
+	public static void openInExternalBrowser(URL url, PluginContextProvider provider) {
+		if (url==null){
+			return;
+		}
+		try {
+			// Open default external browser
+			IWorkbenchBrowserSupport browserSupport = getWorkbench().getBrowserSupport();
+			IWebBrowser externalBrowser = browserSupport.getExternalBrowser();
+			externalBrowser.openURL(url);
+
+		} catch (Exception ex) {
+			logError("Cannot open external browser url", ex, provider);
+		}
+	}
 }

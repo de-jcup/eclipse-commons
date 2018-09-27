@@ -7,7 +7,7 @@ import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvi
 public class TestcaseTaskTagsSupportProvider extends AbstractConfigurableTaskTagsSupportProvider{
 
 	public TestcaseTaskTagsSupportProvider(TestcaseActivator plugin) {
-		super(plugin, plugin.getPluginId());
+		super(plugin);
 	}
 
 	@Override

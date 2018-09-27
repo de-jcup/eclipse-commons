@@ -1,5 +1,6 @@
 package testcase.de.jcup.eclipse.commons;
 
+import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextAttribute;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
@@ -9,9 +10,13 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
 
+import de.jcup.eclipse.commons.WhitespaceWordEndDetector;
+import de.jcup.eclipse.commons.keyword.DocumentKeyWord;
+import de.jcup.eclipse.commons.keyword.DocumentKeywordTextHover;
+import de.jcup.eclipse.commons.keyword.TooltipTextSupportPreferences;
 import de.jcup.eclipse.commons.presentation.PresentationSupport;
 
-public class TestCaseSourceViewerConfiguration extends SourceViewerConfiguration {
+public class TestCaseSourceViewerConfiguration extends SourceViewerConfiguration  implements TooltipTextSupportPreferences{
 	private TextAttribute defaultTextAttribute;
 
 	public TestCaseSourceViewerConfiguration() {
@@ -19,6 +24,12 @@ public class TestCaseSourceViewerConfiguration extends SourceViewerConfiguration
 				Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
 	}
 
+	@Override
+	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType) {
+		/* normaly we we would check content type, but for testcase...*/
+		return new DocumentKeywordTextHover(this, new WhitespaceWordEndDetector());
+	}
+	
 	@Override
 	public IPresentationReconciler getPresentationReconciler(ISourceViewer sourceViewer) {
 		PresentationReconciler reconciler = new PresentationReconciler();
@@ -57,6 +68,21 @@ public class TestCaseSourceViewerConfiguration extends SourceViewerConfiguration
 
 	protected TestCaseColorManager getColorManager() {
 		return TestcaseActivator.getDefault().getTestCaseColorManager();
+	}
+
+	@Override
+	public boolean areTooltipsForKeyWordsEnabled() {
+		return true;
+	}
+
+	@Override
+	public String getCommentColorWeb() {
+		return "#00ff00";
+	}
+
+	@Override
+	public DocumentKeyWord[] getAllKeywords() {
+		return TestCaseKeywords.values();
 	}
 
 }

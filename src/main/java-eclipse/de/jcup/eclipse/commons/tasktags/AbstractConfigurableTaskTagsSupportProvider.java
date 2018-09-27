@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
+import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.tasktags.TaskTagsSupport.TaskTagDefinition;
 import de.jcup.eclipse.commons.tasktags.TaskTagsSupport.TaskTagSupportProvider;
 
@@ -23,9 +24,9 @@ public abstract class AbstractConfigurableTaskTagsSupportProvider implements Tas
 	private String pluginId;
 	private TaskTagsSupport todoTaskSupport;
 	
-	public AbstractConfigurableTaskTagsSupportProvider(AbstractUIPlugin plugin, String pluginId) {
-		this.plugin=plugin;
-		this.pluginId=pluginId;
+	public AbstractConfigurableTaskTagsSupportProvider(PluginContextProvider provider) {
+		this.plugin=provider.getActivator();
+		this.pluginId=provider.getPluginID();
 
 		converter = new TaskTagDefinitionConverter();
 		todoTaskSupport = new TaskTagsSupport(this);

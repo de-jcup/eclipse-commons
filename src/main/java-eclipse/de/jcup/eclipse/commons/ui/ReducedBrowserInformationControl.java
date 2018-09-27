@@ -36,7 +36,14 @@ public class ReducedBrowserInformationControl extends AbstractInformationControl
 	private static Point cachedScrollBarSize;
 	private String currentHTML;
 	private Browser browser;
+	private boolean initialized;
+	private BrowserInformationListener listener;
 
+	
+	public void setListener(BrowserInformationListener listener) {
+		this.listener = listener;
+	}
+	
 	/**
 	 * Creates an simple browser information control being resizable, providing
 	 * a toolbar and uses hyperlink listener
@@ -68,6 +75,12 @@ public class ReducedBrowserInformationControl extends AbstractInformationControl
 	@Override
 	public void setInformation(String information) {
 		if (isBrowserNotDisposed()) {
+			if (!initialized){
+				if (listener!=null){
+					browser.addLocationListener(listener);
+					browser.addOpenWindowListener(listener);
+				}
+			}
 			boolean hasHtmlElementInside = information.startsWith("<html");
 			StringBuilder htmlSb = new StringBuilder();
 			if (!hasHtmlElementInside) {

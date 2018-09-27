@@ -16,5 +16,5 @@ here as a simple library which can be used by plugins.
 
 
 # History:
-0.4.x properties support
+0.4.0 improved html links, improved testcase
 0.3.x task support
