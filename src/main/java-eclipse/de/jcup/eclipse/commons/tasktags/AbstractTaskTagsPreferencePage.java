@@ -1,6 +1,6 @@
 package de.jcup.eclipse.commons.tasktags;
 
-import static de.jcup.eclipse.commons.ui.EclipseCommonsSWTFactory.*;
+import static de.jcup.eclipse.commons.ui.SWTFactory.*;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
 import de.jcup.eclipse.commons.tasktags.TaskTagsSupport.TaskTagDefinition;
-import de.jcup.eclipse.commons.ui.EclipseCommonsSWTFactory;
+import de.jcup.eclipse.commons.ui.SWTFactory;
 
 /**
  * Base class for preference pages for TODOs
@@ -118,7 +118,7 @@ public class AbstractTaskTagsPreferencePage extends PreferencePage implements IW
 
 	@Override
 	protected Control createContents(Composite parent) {
-		Composite mainComposite = EclipseCommonsSWTFactory.createComposite(parent, 2, 2,GridData.FILL_BOTH);
+		Composite mainComposite = SWTFactory.createComposite(parent, 2, 2,GridData.FILL_BOTH);
 		createCheckBox(mainComposite);
 		
 		createTable(mainComposite);
@@ -222,9 +222,9 @@ public class AbstractTaskTagsPreferencePage extends PreferencePage implements IW
 	 */
 	protected void createTable(Composite parent) {
 		Font font = parent.getFont();
-		EclipseCommonsSWTFactory.createLabel(parent, "Definitions:", 2);
+		SWTFactory.createLabel(parent, "Definitions:", 2);
 		// Create table composite
-		Composite tableComposite = EclipseCommonsSWTFactory.createComposite(parent, font, 1, 1, GridData.FILL_BOTH, 0,
+		Composite tableComposite = SWTFactory.createComposite(parent, font, 1, 1, GridData.FILL_BOTH, 0,
 				0);
 		// Create table
 		propertiesTable = new TableViewer(tableComposite,
@@ -315,7 +315,7 @@ public class AbstractTaskTagsPreferencePage extends PreferencePage implements IW
 	 */
 	protected void createTableButtons(Composite parent) {
 		// Create button composite
-		Composite buttonComposite = EclipseCommonsSWTFactory.createComposite(parent, parent.getFont(), 1, 1,
+		Composite buttonComposite = SWTFactory.createComposite(parent, parent.getFont(), 1, 1,
 				GridData.VERTICAL_ALIGN_BEGINNING | GridData.HORIZONTAL_ALIGN_END, 0, 0);
 
 		// Create buttons

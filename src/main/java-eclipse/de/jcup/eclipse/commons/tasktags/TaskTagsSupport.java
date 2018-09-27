@@ -102,7 +102,7 @@ public class TaskTagsSupport implements IResourceChangeListener {
 		noResourceChangedScan(false);
 	}
 
-	void noResourceChangedScan(boolean ignoreFilesWithExistingMarkers) {
+	private void noResourceChangedScan(boolean ignoreFilesWithExistingMarkers) {
 		TaskTagContext initialContext = new TaskTagContext();
 		initialContext.ignoreFilesWithExistingMarkers = ignoreFilesWithExistingMarkers;
 
@@ -111,18 +111,21 @@ public class TaskTagsSupport implements IResourceChangeListener {
 			return;
 		}
 		try {
-			noResourceChangedScan(initialContext, workspace.getRoot());
+			doNoResourceChangedScan(initialContext, workspace.getRoot());
 			triggerTodoTaskJobIfNecessary(initialContext);
 		} catch (CoreException e) {
 			provider.logError("was not able to process todos initial", e);
 		}
 	}
 
-	void noResourceChangedScan(TaskTagContext context, IContainer container) throws CoreException {
+	void doNoResourceChangedScan(TaskTagContext context, IContainer container) throws CoreException {
+		if (!container.isAccessible()){
+			return;
+		}
 		IResource[] members = container.members();
 		for (IResource member : members) {
 			if (member instanceof IContainer) {
-				noResourceChangedScan(context, (IContainer) member);
+				doNoResourceChangedScan(context, (IContainer) member);
 			} else if (member instanceof IFile) {
 				IFile file = (IFile) member;
 				if (!provider.isFileHandled(file)) {

@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Text;
  * Factory class to create some SWT resources.
  * @version 1.0.0
  */
-public class EclipseCommonsSWTFactory {
+public class SWTFactory {
 
 	/**
 	 * Returns a width hint for a button control.

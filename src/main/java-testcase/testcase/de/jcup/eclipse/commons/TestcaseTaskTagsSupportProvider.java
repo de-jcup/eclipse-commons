@@ -12,6 +12,9 @@ public class TestcaseTaskTagsSupportProvider extends AbstractConfigurableTaskTag
 
 	@Override
 	public boolean isLineCheckforTodoTaskNessary(String line, int lineNumber, String[] lines) {
+		if (line==null){
+			return false;
+		}
 		return line.startsWith("!!");
 	}
 
@@ -22,7 +25,14 @@ public class TestcaseTaskTagsSupportProvider extends AbstractConfigurableTaskTag
 
 	@Override
 	public boolean isFileHandled(IFile file) {
-		return file.getFileExtension().equals("testcase");
+		if (file==null){
+			return false;
+		}
+		String fileExtension = file.getFileExtension();
+		if (fileExtension==null){
+			return false;
+		}
+		return fileExtension.equals("testcase");
 	}
 
 }
