@@ -23,7 +23,10 @@ import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.jface.preference.JFacePreferences;
+
 import de.jcup.eclipse.commons.resource.ResourceInputStreamProvider;
+import de.jcup.eclipse.commons.ui.ColorUtil;
 
 public class TooltipTextSupport {
 	/**
@@ -36,7 +39,7 @@ public class TooltipTextSupport {
 		return INSTANCE.get(id);
 	}
 	private Map<String, String> idToTooltipCache = new TreeMap<>();
-	private String _tooltip_css;
+	private String loaded_tooltip_css;
 	private ResourceInputStreamProvider resourceInputStreamProvider;
 
 	TooltipTextSupport(){
@@ -64,18 +67,45 @@ public class TooltipTextSupport {
 	}
 	
 	public String getCSS(){
-		if (_tooltip_css!=null){
-			return _tooltip_css;
-		}
-		String path = createPathWithoutFileEnding("_tooltips");
-		String loaded = loadFrom(path+".css");
-		if (loaded==null){
-			_tooltip_css="";
-		}else{
-			_tooltip_css=loaded;
-		}
-		return _tooltip_css;
+		ensureTooltipCSSFileLoaded();
+		return createTooltipCSSString();
 	}
+
+	protected void ensureTooltipCSSFileLoaded() {
+		if (loaded_tooltip_css==null){
+			String path = createPathWithoutFileEnding("_tooltips");
+			String loaded = loadFrom(path+".css");
+			if (loaded==null){
+				loaded_tooltip_css="";
+			}else{
+				loaded_tooltip_css=loaded;
+			}
+		}
+	}
+
+	private String createTooltipCSSString() {
+		String linkColor = ColorUtil.convertJFaceColorToWeb(JFacePreferences.HYPERLINK_COLOR);
+		String activeLinkColor = ColorUtil.convertJFaceColorToWeb(JFacePreferences.ACTIVE_HYPERLINK_COLOR);
+			
+		
+		StringBuilder sb = new StringBuilder();
+		if (linkColor!=null){
+			sb.append("\na:link,a:visited {");
+			sb.append(" color:").append(linkColor);
+			sb.append("}\n");
+		}
+		if (activeLinkColor!=null){
+			sb.append("\na:hover,a:active {");
+			sb.append(" color:").append(activeLinkColor);
+			sb.append("}\n");
+		}
+		sb.append(loaded_tooltip_css);
+		return sb.toString();
+	}
+
+	
+	
+	
 	/**
 	 * Resolves tool tip for given id from text files inside tool tip-folder. String result will be cached
 	 * @param id

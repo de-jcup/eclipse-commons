@@ -6,8 +6,7 @@ problem of too much copy & waste in de-jcup plugins. Some bigger and trick parts
 here as a simple library which can be used by plugins.
 
 ## Current version
-0.4.0
-
+0.4.1 implemented hyperlinking colors using colors from jface, see https://github.com/de-jcup/eclipse-commons/issues/7
 
 ## way to build
 - currently build-library.jardesc is used (ugly but it works)
