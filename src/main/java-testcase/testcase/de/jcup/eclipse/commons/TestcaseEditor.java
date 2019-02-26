@@ -1,9 +1,16 @@
 package testcase.de.jcup.eclipse.commons;
 
+import java.io.File;
+
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
+
+import de.jcup.eclipse.commons.EclipseResourceHelper;
+import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 public class TestcaseEditor extends TextEditor{
 	public TestcaseEditor() {
@@ -13,5 +20,24 @@ public class TestcaseEditor extends TextEditor{
 	public void createPartControl(Composite parent) {
 		parent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		super.createPartControl(parent);
+	}
+	
+	@Override
+	protected void doSetInput(IEditorInput input) throws CoreException {
+		super.doSetInput(input);
+		try {
+			File file = EclipseResourceHelper.DEFAULT.getFileOfEditor(this);
+			String message = "[Test resource helper] - Input changed, file is:"+file;
+			System.out.println(">>> "+message);
+			this.getStatusLineManager().setMessage(message);
+			
+		} catch (CoreException e) {
+			EclipseUtil.logError("Was not able to get file of editor", e,TestcaseActivator.getDefault());
+		}
+	}
+	
+	@Override
+	protected void handleEditorInputChanged() {
+		super.handleEditorInputChanged();
 	}
 }
