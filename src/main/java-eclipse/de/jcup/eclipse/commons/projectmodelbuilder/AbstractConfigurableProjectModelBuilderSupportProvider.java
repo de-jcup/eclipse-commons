@@ -6,28 +6,27 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 import de.jcup.eclipse.commons.PluginContextProvider;
-import de.jcup.eclipse.commons.projectmodelbuilder.ProjectModelBuilderSupport.ProjectModelBuilderSupportProvider;
 
 /**
  * Abstract base implementation for todo tasks being configurable inside preferences
  * @author Albert Tregnaghi
  *
  */
-public abstract class AbstractConfigurableProjectModelBuilderSupportProvider implements ProjectModelBuilderSupportProvider {
+public abstract class AbstractConfigurableProjectModelBuilderSupportProvider<M> implements ProjectModelBuilderSupportProvider<M> {
 
 	private AbstractUIPlugin plugin;
 	private String pluginId;
-	private ProjectModelBuilderSupport todoTaskSupport;
+	private ProjectModelBuilderSupport<M> projectModelBuilderSupport;
 	
 	public AbstractConfigurableProjectModelBuilderSupportProvider(PluginContextProvider provider) {
 		this.plugin=provider.getActivator();
 		this.pluginId=provider.getPluginID();
 
-		todoTaskSupport = new ProjectModelBuilderSupport(this);
+		projectModelBuilderSupport = new ProjectModelBuilderSupport<M>(this);
 	}
 	
-	public ProjectModelBuilderSupport getTodoTaskSupport() {
-		return todoTaskSupport;
+	public ProjectModelBuilderSupport<M> getProjectModelBuilderSupport() {
+		return projectModelBuilderSupport;
 	}
 	
 	@Override

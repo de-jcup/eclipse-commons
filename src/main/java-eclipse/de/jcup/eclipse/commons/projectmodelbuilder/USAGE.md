@@ -1,16 +1,8 @@
-# Simple variant
-TaskTagsSupport class is necessary for all support actions with todo tasks
-- is complete standalone.
-- but you must define a marker which extends problem marker in your plugin.xml
+# Project model builder support
+This is currently under construction
 
-Just integrate into plugin activator class - see TestcaseActivator.
+## What does this feature do?
+When you want to gather information/build a model depending on a project resource changes you s
+simply install such a support from inside your plugins Activator class.
 
-If you have fixed Todo identifiers and you do NOT need any preferences etc. you can 
-simply set a fixed list of tododefinitions inside an own TaskTagsupportProvider
-
-# Handling todo tasks being configurable by preferences
-Use the complete package
-- create a support provider by extending `AbstractConfigurableTaskTagsSupportProvider`
-- create a preference page and extend there `AbstractTaskTagsPreferencePage`
-- create a preference initializer and extend there `AbstractTaskTagsPreferenceInitializer`
-  + define usage inside plugin.xml
+You will be notified about changes.

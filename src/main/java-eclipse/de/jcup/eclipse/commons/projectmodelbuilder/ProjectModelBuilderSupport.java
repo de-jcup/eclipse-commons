@@ -19,12 +19,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -36,38 +34,39 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.ui.texteditor.MarkerUtilities;
-import org.junit.FixMethodOrder;
 
 /**
- * A full standalone todo task solution which can be copied into a plugin and
- * works... Only markertype and implementation for logging necessary on
- * consumser side. <br>
- * <br>
- * This class is part of de.jcup.eclipse.commons which are a "copy-waste"
- * friendly approach. Any changes shall be done inside
- * https://github.com/de-jcup/eclipse-commons and then copied to target plugins
- * again...
+ * A full standalone project model build solution which can be copied into a plugin and
+ * works...<br>
  * 
  * @author Albert Tregnaghi
- * @version 2.1.0 - 2018-07-01
+ * @version 0.1
  *
  */
-public class ProjectModelBuilderSupport implements IResourceChangeListener {
+public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 
-	private ProjectModelBuilderSupportProvider provider;
+	private ProjectModelBuilderSupportProvider<M> provider;
+	private M model;
+	private ProjectModelBuilder<M> builder;
 
-	/**
-	 * Creates task support and assert provider provider and their content is
-	 * not <code>null</code>
-	 * 
-	 * @param provider
-	 */
-	public ProjectModelBuilderSupport(ProjectModelBuilderSupportProvider provider) {
+	public ProjectModelBuilderSupport(ProjectModelBuilderSupportProvider<M> provider) {
 		if (provider == null) {
 			throw new IllegalArgumentException("provider may not be null");
 		}
 		this.provider = provider;
+
+		builder = provider.createBuilder();
+		if (builder==null) {
+			throw new IllegalStateException("Provider returned builder being null!");
+		}
+		this.model=builder.create();
+		if (model==null) {
+			throw new IllegalStateException("Builder did create no model but returned null!");
+		}
+	}
+	
+	public M getModel() {
+		return model;
 	}
 
 	/**
@@ -95,8 +94,7 @@ public class ProjectModelBuilderSupport implements IResourceChangeListener {
 	}
 
 	private void noResourceChangedScan(boolean ignoreFilesWithExistingMarkers) {
-		ProjectModelBuilderTagContext initialContext = new ProjectModelBuilderTagContext();
-		initialContext.ignoreFilesWithExistingMarkers = ignoreFilesWithExistingMarkers;
+		ProjectModelBuilderContext initialContext = new ProjectModelBuilderContext();
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		if (workspace == null) {
@@ -104,13 +102,13 @@ public class ProjectModelBuilderSupport implements IResourceChangeListener {
 		}
 		try {
 			doNoResourceChangedScan(initialContext, workspace.getRoot());
-			triggerTodoTaskJobIfNecessary(initialContext);
+			triggerModelBuildIfNecessary(initialContext);
 		} catch (CoreException e) {
 			provider.logError("was not able to process todos initial", e);
 		}
 	}
 
-	void doNoResourceChangedScan(ProjectModelBuilderTagContext context, IContainer container) throws CoreException {
+	void doNoResourceChangedScan(ProjectModelBuilderContext context, IContainer container) throws CoreException {
 		if (!container.isAccessible()){
 			return;
 		}
@@ -128,23 +126,6 @@ public class ProjectModelBuilderSupport implements IResourceChangeListener {
 					context.resourcesToClean.add(file);
 					continue;
 				}
-				/* FIXME albert, 17.02.2019 remove marker stuff */
-//				if (context.ignoreFilesWithExistingMarkers) {
-//					IMarker[] markers = file.findMarkers(provider.getTodoTaskMarkerId(), false, IResource.DEPTH_ZERO);
-//					if (markers != null && markers.length > 0) {
-//						/*
-//						 * already an marker available - ignore. changes will be
-//						 * automatically handled by resource change mechanism of
-//						 * eclipse and this listener
-//						 */
-//						continue;
-//					}
-//
-//				}
-				/*
-				 * when no markers found this means no resource changes handled,
-				 * means was (maybe) never inspected. So do inspect it
-				 */
 				visitResource(context, file);
 			}
 
@@ -173,87 +154,52 @@ public class ProjectModelBuilderSupport implements IResourceChangeListener {
 		if (type != IResourceChangeEvent.POST_CHANGE) {
 			return;
 		}
-		ProjectModelBuilderTagContext context = new ProjectModelBuilderTagContext();
+		ProjectModelBuilderContext context = new ProjectModelBuilderContext();
 		IResource resource = event.getResource();
 
 		handleResource(context, resource);
 		handleDelta(context, event.getDelta());
 
-		triggerTodoTaskJobIfNecessary(context);
+		triggerModelBuildIfNecessary(context);
 	}
 
-	private void triggerTodoTaskJobIfNecessary(ProjectModelBuilderTagContext context) {
+	private void triggerModelBuildIfNecessary(ProjectModelBuilderContext context) {
 		try {
-			createTodoMarkers(context);
+			rebuildModel(context);
 		} catch (CoreException e) {
-			provider.logError("Was not able to create todo markers", e);
+			provider.logError("Was not able to rebuild model", e);
 		}
 	}
 
-	protected void visitLines(ProjectModelBuilderTagContext context, String[] lines, IFile file) throws CoreException {
+	protected void visitLines(ProjectModelBuilderContext context, String[] lines, IFile file) throws CoreException {
 		context.resourcesToClean.add(file);
 
 		int lineNumber = 0;
 		for (String line : lines) {
 			lineNumber++;
-			if (line == null || line.length() == 0 || !provider.isLineCheckforTodoTaskNessary(line, lineNumber, lines)) {
+			if (line == null || line.length() == 0 || !provider.isLineCheckforModelNessary(line, lineNumber, lines)) {
 				continue;
 			}
-			for (TaskTagDefinition task : provider.getTaskTagDefinitions()) {
-				addCreateMarkerAction(context, task, line, lineNumber, file);
-			}
+			addModelEntry(context,line,lineNumber,file);
 		}
 	}
 
-	protected void addCreateMarkerAction(ProjectModelBuilderTagContext context, TaskTagDefinition definition, String line,
-			int lineNumber, IResource editorResource) throws CoreException {
-		if (context == null) {
-			throw new IllegalArgumentException("context may not be null!");
-		}
-		if (definition == null) {
-			return;
-		}
-		String taskIdentifier = definition.getIdentifier();
-		if (taskIdentifier == null) {
-			return;
-		}
-		int taskIdentifierLength = taskIdentifier.length();
-		if (taskIdentifierLength == 0) {
-			return;
-		}
-		int todoIndex = line.indexOf(taskIdentifier);
-		if (todoIndex == -1) {
-			return;
-		}
-		int end = todoIndex + taskIdentifierLength;
-		String message = line.substring(end);
-		if (message.length() == 0) {
-			/* no content */
-			return;
-		}
-		if (Character.isLetterOrDigit(message.charAt(0))) {
-			/* TODOx is no todo... */
-			return;
-		}
-		CreateMarkerAction action = new CreateMarkerAction();
-
-		action.priority = definition.getPriority().getMarkerPriority();
-		action.resource = editorResource;
-		action.message = taskIdentifier + " " + message;
-		action.lineNumber = lineNumber;
-
+	private void addModelEntry(ProjectModelBuilderContext context, String line, int lineNumber, IFile file) {
+		CreateModelEntryAction action = new CreateModelEntryAction(file);
+		action.lineNumber=lineNumber;
+		action.line=line;
+		
 		context.actions.add(action);
-
 	}
 
-	private void createTodoMarkers(ProjectModelBuilderTagContext context) throws CoreException {
-		List<CreateMarkerAction> actions = context.actions;
+	private void rebuildModel(ProjectModelBuilderContext context) throws CoreException {
+		List<CreateModelEntryAction> actions = context.actions;
 		List<IResource> resourcesToClean = context.resourcesToClean;
 		int totalTasks = actions.size() + resourcesToClean.size();
 		if (totalTasks == 0) {
 			return;
 		}
-		Job job = new Job("Update todos of type" + provider.getTodoTaskMarkerId()) {
+		Job job = new Job("Rebuild model of type" + provider.getModelName()) {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
@@ -261,14 +207,19 @@ public class ProjectModelBuilderSupport implements IResourceChangeListener {
 				int totalTasks = actions.size() + resourcesToClean.size();
 
 				int worked = 0;
-				monitor.beginTask("Updating todo tasks", totalTasks);
+				monitor.beginTask("Updating model", totalTasks);
 				for (IResource resourceToClean : resourcesToClean) {
-					removeMarkers(resourceToClean);
+					try {
+						removeFromModel(resourceToClean);
+					} catch (CoreException e) {
+						return new Status(IStatus.ERROR, ProjectModelBuilderSupport.this.provider.getPluginId(),
+								"Failed to create task markers", e);
+					}
 					monitor.worked(worked++);
 				}
-				for (CreateMarkerAction action : actions) {
+				for (CreateModelEntryAction action : actions) {
 					try {
-						createTaskMarker(action.resource, action.message, action.lineNumber, action.priority);
+						addToModel(action);
 					} catch (CoreException e) {
 						return new Status(IStatus.ERROR, ProjectModelBuilderSupport.this.provider.getPluginId(),
 								"Failed to create task markers", e);
@@ -281,46 +232,15 @@ public class ProjectModelBuilderSupport implements IResourceChangeListener {
 		job.schedule();
 	}
 
-	private void createTaskMarker(IResource resource, String message, int lineNumber, int priority)
-			throws CoreException {
-		if (lineNumber <= 0)
-			lineNumber = 1;
-		HashMap<String, Object> map = new HashMap<>();
-		map.put(IMarker.PRIORITY, new Integer(priority));
-		map.put(IMarker.LOCATION, resource.getFullPath().toOSString());
-		map.put(IMarker.MESSAGE, message);
-		MarkerUtilities.setLineNumber(map, lineNumber);
-		MarkerUtilities.setMessage(map, message);
-
-		IMarker newMarker = resource.createMarker(provider.getTodoTaskMarkerId());
-		newMarker.setAttributes(map);
-
+	protected void addToModel(CreateModelEntryAction action) throws CoreException{
+		builder.update(model,action);
 	}
 
-	private IMarker[] removeMarkers(IResource resource) {
-		if (resource == null) {
-			/* maybe sync problem - guard close */
-			return new IMarker[] {};
-		}
-		IMarker[] tasks = null;
-		if (resource != null) {
-			try {
-				tasks = resource.findMarkers(provider.getTodoTaskMarkerId(), true, IResource.DEPTH_ZERO);
-				for (int i = 0; i < tasks.length; i++) {
-					tasks[i].delete();
-				}
-
-			} catch (CoreException e) {
-				provider.logError("Was not able to delete markers", e);
-			}
-		}
-		if (tasks == null) {
-			tasks = new IMarker[] {};
-		}
-		return tasks;
+	protected void removeFromModel(IResource resourceToClean) throws CoreException{
+		builder.update(model,new RemoveModelEntryAction(resourceToClean));
 	}
 
-	protected void visitResource(ProjectModelBuilderTagContext context, IFile file) throws CoreException {
+	protected void visitResource(ProjectModelBuilderContext context, IFile file) throws CoreException {
 		if (file == null) {
 			return;
 		}
@@ -348,12 +268,11 @@ public class ProjectModelBuilderSupport implements IResourceChangeListener {
 
 	}
 
-	private void handleResource(ProjectModelBuilderTagContext context, IResource resource) {
+	private void handleResource(ProjectModelBuilderContext context, IResource resource) {
 		if (!(resource instanceof IFile)) {
 			return;
 		}
 		IFile file = (IFile) resource;
-
 		if (!provider.isFileHandled(file)) {
 			return;
 		}
@@ -364,7 +283,7 @@ public class ProjectModelBuilderSupport implements IResourceChangeListener {
 		}
 	}
 
-	private void handleDelta(ProjectModelBuilderTagContext context, IResourceDelta delta) {
+	private void handleDelta(ProjectModelBuilderContext context, IResourceDelta delta) {
 		if (delta == null) {
 			return;
 		}
@@ -382,34 +301,69 @@ public class ProjectModelBuilderSupport implements IResourceChangeListener {
 		}
 	}
 
-	public interface ProjectModelBuilderSupportProvider {
-
-		public void logError(String error, Throwable t);
-
-		public boolean isFileHandled(IFile file);
-
-		boolean isProjectModelBuilderSupportEnabled();
-
-		/**
-		 * 
-		 * @return plugin id for the plugin where {@link ProjectModelBuilderSupport} is
-		 *         used for
-		 */
-		String getPluginId();
-	}
-
-	private class ProjectModelBuilderTagContext {
+	private class ProjectModelBuilderContext {
+		
+		private ProjectModelBuilderContext() {
+		}
+		
 		List<IResource> resourcesToClean = new ArrayList<>();
-		List<CreateMarkerAction> actions = new ArrayList<>();
-		boolean ignoreFilesWithExistingMarkers;
+		List<CreateModelEntryAction> actions = new ArrayList<>();
+		
 	}
 
-	private static class CreateMarkerAction {
-
-		int priority;
+	private abstract class AbstractModelUpdateData implements ModelUpdateAction{
 		IResource resource;
+		String line;
 		String message;
 		int lineNumber;
+		
+		public String getLine() {
+			return line;
+		}
+		
+		public int getLineNumber() {
+			return lineNumber;
+		}
+		
+		public String getMessage() {
+			return message;
+		}
+		
+		AbstractModelUpdateData(IResource resource) {
+			this.resource=resource;
+		}
+		@Override
+		public IResource getResource() {
+			return resource;
+		}
+		
+	}
+	
+	private class CreateModelEntryAction extends AbstractModelUpdateData{
+		
+		CreateModelEntryAction(IResource resource) {
+			super(resource);
+		}
+		
+		@Override
+		public ActionType getType() {
+			return ActionType.ADD;
+		}
+		
+		
+	}
+	
+	private class RemoveModelEntryAction extends AbstractModelUpdateData{
+		
+		RemoveModelEntryAction(IResource resource) {
+			super(resource);
+		}
+		
+		@Override
+		public ActionType getType() {
+			return ActionType.DELETE;
+		}
+		
 	}
 
 }

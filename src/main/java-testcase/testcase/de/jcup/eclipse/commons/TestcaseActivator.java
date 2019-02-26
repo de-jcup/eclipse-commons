@@ -26,15 +26,21 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 
 	private TestCaseColorManager testCaseColorManager;
 
+	private TestCaseProjectModelBuilderSupportProvider projectModelSupportProvider;
+
 	/**
 	 * The constructor
 	 */
 	public TestcaseActivator() {
 		testCaseColorManager = new TestCaseColorManager();
 		taskSupportProvider = new TestcaseTaskTagsSupportProvider(this) ;
+		projectModelSupportProvider = new TestCaseProjectModelBuilderSupportProvider(this);
 		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
 		PluginContextProviderRegistry.register(this);
 		
+	}
+	public TestCaseProjectModelBuilderSupportProvider getProjectModelSupportProvider() {
+		return projectModelSupportProvider;
 	}
 	
 	public TestCaseColorManager getTestCaseColorManager() {
@@ -49,11 +55,13 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 		super.start(context);
 		plugin = this;
 		taskSupportProvider.getTodoTaskSupport().install();
+		projectModelSupportProvider.getProjectModelBuilderSupport().install();
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		taskSupportProvider.getTodoTaskSupport().uninstall();
+		projectModelSupportProvider.getProjectModelBuilderSupport().uninstall();
 		super.stop(context);
 	}
 
@@ -86,5 +94,8 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 	@Override
 	public String getPluginID() {
 		return PLUGIN_ID;
+	}
+	public TestCaseProjectModel getProjectModel() {
+		return getProjectModelSupportProvider().getProjectModelBuilderSupport().getModel();
 	}
 }
