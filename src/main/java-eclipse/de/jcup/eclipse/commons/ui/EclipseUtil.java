@@ -15,10 +15,14 @@
  */
 package de.jcup.eclipse.commons.ui;
 
+import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -32,7 +36,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -43,9 +46,11 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
 
@@ -54,6 +59,18 @@ import de.jcup.eclipse.commons.PluginContextProvider;
 public class EclipseUtil {
 
 	private static Font monoFont;
+
+	public static void openInEditor(File file) throws PartInitException {
+		IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(file.getAbsolutePath()));
+
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IDE.openEditorOnFileStore(page, fileStore);
+	}
+	
+	public static void openInEditor(IFile file) throws PartInitException {
+		IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
+		IDE.openEditor(page,file);
+	}
 
 	public static ImageDescriptor createImageDescriptor(String path, String pluginId) {
 		if (path == null) {
@@ -67,8 +84,7 @@ public class EclipseUtil {
 		Bundle bundle = Platform.getBundle(pluginId);
 		if (bundle == null) {
 			/*
-			 * fall back if bundle not available, so avoid NPE in eclipse
-			 * framework
+			 * fall back if bundle not available, so avoid NPE in eclipse framework
 			 */
 			return ImageDescriptor.getMissingImageDescriptor();
 		}
@@ -140,9 +156,9 @@ public class EclipseUtil {
 	}
 
 	/**
-	 * Get image by path from image registry. If not already registered a new
-	 * image will be created and registered. If not createable a fallback image
-	 * is used instead
+	 * Get image by path from image registry. If not already registered a new image
+	 * will be created and registered. If not createable a fallback image is used
+	 * instead
 	 * 
 	 * @param path
 	 * @param provider
@@ -190,8 +206,7 @@ public class EclipseUtil {
 
 	}
 
-	public static void throwCoreException(String message, Exception e, PluginContextProvider provider)
-			throws CoreException {
+	public static void throwCoreException(String message, Exception e, PluginContextProvider provider) throws CoreException {
 		throw new CoreException(new Status(IStatus.ERROR, provider.getPluginID(), message, e));
 
 	}
@@ -270,7 +285,7 @@ public class EclipseUtil {
 	}
 
 	public static void logError(String error, Throwable t, PluginContextProvider provider) {
-		if (provider==null){
+		if (provider == null) {
 			return;
 		}
 		getLog(provider).log(new Status(IStatus.ERROR, provider.getPluginID(), error, t));
@@ -282,7 +297,7 @@ public class EclipseUtil {
 	}
 
 	public static void openInExternalBrowser(URL url, PluginContextProvider provider) {
-		if (url==null){
+		if (url == null) {
 			return;
 		}
 		try {
