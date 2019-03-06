@@ -10,9 +10,14 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
 
 import de.jcup.eclipse.commons.EclipseResourceHelper;
+import de.jcup.eclipse.commons.PluginContextProvider;
+import de.jcup.eclipse.commons.replacetabbyspaces.ReplaceTabBySpacesSupport;
+import de.jcup.eclipse.commons.replacetabbyspaces.ReplaceTabBySpacesProvider;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 public class TestcaseEditor extends TextEditor{
+    
+    private ReplaceTabBySpacesSupport replaceTabBySpaceSupport = new ReplaceTabBySpacesSupport();
 	public TestcaseEditor() {
 		setSourceViewerConfiguration(new TestCaseSourceViewerConfiguration());
 	}
@@ -20,6 +25,25 @@ public class TestcaseEditor extends TextEditor{
 	public void createPartControl(Composite parent) {
 		parent.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN));
 		super.createPartControl(parent);
+		
+		replaceTabBySpaceSupport.install(this,new ReplaceTabBySpacesProvider() {
+            
+            @Override
+            public boolean isReplaceTabBySpacesEnabled() {
+                return true;
+            }
+            
+            @Override
+            public PluginContextProvider getPluginContextProvider() {
+                return TestcaseActivator.getDefault();
+            }
+            
+            @Override
+            public int getAmountOfSpacesToReplaceTab() {
+                return 6;
+            }
+        });
+
 	}
 	
 	@Override
@@ -40,4 +64,5 @@ public class TestcaseEditor extends TextEditor{
 	protected void handleEditorInputChanged() {
 		super.handleEditorInputChanged();
 	}
+	
 }
