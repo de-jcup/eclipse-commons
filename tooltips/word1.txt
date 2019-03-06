@@ -1,1 +1,4 @@
 word1 is described by a simple textfile
+
+The next line is UTF-8:
+✿ ☺ ☻ ☹ ☼ ☂ ☃ ⌇ ✆ ☎ ⌘ ⇧ ↩ ✞ ✡ ☭ ← → ↑ ↓ ➫ ☜ ☞ ☝ ☟ ✍ ✎ ✌ ☮ ✔ ★ ☆ ✉ ✄ ✈ ♦ ♣ ♠ ♥ ❤ ♡ ♪ ♩ ♫ ♬ ♯ ♀ ♂ ❑ ❒ ◈ ◐ ◑ ✖ ∞ « » ‹ › “ ” ‘ ’ „ ‚ –

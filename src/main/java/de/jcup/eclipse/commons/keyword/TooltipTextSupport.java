@@ -164,7 +164,7 @@ public class TooltipTextSupport {
 	private String loadFrom(String path) {
 	
 		try (InputStream inputStream = getInputStream(path)) {
-			return loadFromStream(inputStream);
+			return loadFromStreamAsUTF_8(inputStream);
 		} catch (IOException e) {
 			/* should not happen - but if there are errors
 			 * we just return an empty string
@@ -180,12 +180,12 @@ public class TooltipTextSupport {
 		return resourceInputStreamProvider.getStreamFor(path);
 	}
 
-	private String loadFromStream(InputStream stream) throws IOException {
+	private String loadFromStreamAsUTF_8(InputStream stream) throws IOException {
 		if (stream == null) {
 			return null;
 		}
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+		BufferedReader br = new BufferedReader(new InputStreamReader(stream,"UTF-8"));
 		StringBuilder sb = new StringBuilder();
 		
 		String line = null;
