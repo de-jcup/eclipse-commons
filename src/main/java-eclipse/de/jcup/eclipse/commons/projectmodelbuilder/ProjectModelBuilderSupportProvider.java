@@ -2,9 +2,9 @@ package de.jcup.eclipse.commons.projectmodelbuilder;
 
 import org.eclipse.core.resources.IFile;
 
-public interface ProjectModelBuilderSupportProvider<M> {
+import de.jcup.eclipse.commons.PluginContextProvider;
 
-	public void logError(String error, Throwable t);
+public interface ProjectModelBuilderSupportProvider<M> {
 
 	/**
 	 * Check if this file is handled by provider.
@@ -15,11 +15,11 @@ public interface ProjectModelBuilderSupportProvider<M> {
 
 	boolean isProjectModelBuilderSupportEnabled();
 
-	String getPluginId();
-
 	public String getModelName();
 
 	public boolean isLineCheckforModelNessary(String line, int lineNumber, String[] lines);
 	
 	public ProjectModelBuilder<M> createBuilder();
+	
+	public PluginContextProvider getPluginContextProvider();
 }

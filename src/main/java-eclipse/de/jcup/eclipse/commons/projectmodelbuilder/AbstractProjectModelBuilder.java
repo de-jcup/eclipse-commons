@@ -10,7 +10,7 @@ public abstract class AbstractProjectModelBuilder<M> implements ProjectModelBuil
 		if (action==null) {
 			throw new IllegalArgumentException("action is null!");
 		}
-		this.doUpdate(model,action);
+		this.updateImpl(model,action);
 	}
 
 	/**
@@ -18,6 +18,6 @@ public abstract class AbstractProjectModelBuilder<M> implements ProjectModelBuil
 	 * @param model never <code>null</code>
 	 * @param action never <code>null</code>
 	 */
-	protected abstract void doUpdate(M model, ModelUpdateAction action);
+	protected abstract void updateImpl(M model, ModelUpdateAction action);
 
 }

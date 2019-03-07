@@ -23,6 +23,7 @@ import java.util.List;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -34,6 +35,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+
+import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 /**
  * A full standalone project model build solution which can be copied into a plugin and
@@ -104,7 +107,7 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 			doNoResourceChangedScan(initialContext, workspace.getRoot());
 			triggerModelBuildIfNecessary(initialContext);
 		} catch (CoreException e) {
-			provider.logError("was not able to process todos initial", e);
+			logError("was not able to process todos initial", e);
 		}
 	}
 
@@ -156,7 +159,6 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 		}
 		ProjectModelBuilderContext context = new ProjectModelBuilderContext();
 		IResource resource = event.getResource();
-
 		handleResource(context, resource);
 		handleDelta(context, event.getDelta());
 
@@ -167,7 +169,7 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 		try {
 			rebuildModel(context);
 		} catch (CoreException e) {
-			provider.logError("Was not able to rebuild model", e);
+			logError("Was not able to rebuild model", e);
 		}
 	}
 
@@ -212,7 +214,7 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 					try {
 						removeFromModel(resourceToClean);
 					} catch (CoreException e) {
-						return new Status(IStatus.ERROR, ProjectModelBuilderSupport.this.provider.getPluginId(),
+						return new Status(IStatus.ERROR, ProjectModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
 								"Failed to create task markers", e);
 					}
 					monitor.worked(worked++);
@@ -221,7 +223,7 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 					try {
 						addToModel(action);
 					} catch (CoreException e) {
-						return new Status(IStatus.ERROR, ProjectModelBuilderSupport.this.provider.getPluginId(),
+						return new Status(IStatus.ERROR, ProjectModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
 								"Failed to create task markers", e);
 					}
 					monitor.worked(worked++);
@@ -245,6 +247,7 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 			return;
 		}
 		if (!file.exists()) {
+		    context.resourcesToClean.add(file);
 			return;
 		}
 		if (file.isDerived()) {
@@ -263,7 +266,7 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 			visitLines(context, lines, file);
 		} catch (RuntimeException | IOException e) {
 			throw new CoreException(
-					new Status(Status.ERROR, provider.getPluginId(), "Not able to visit resource", e));
+					new Status(Status.ERROR, provider.getPluginContextProvider().getPluginID(), "Not able to visit resource", e));
 		}
 
 	}
@@ -279,16 +282,22 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 		try {
 			visitResource(context, file);
 		} catch (CoreException e) {
-			provider.logError("Cannot visit resource:" + file, e);
+			logError("Cannot visit resource:" + file, e);
 		}
 	}
 
-	private void handleDelta(ProjectModelBuilderContext context, IResourceDelta delta) {
+	private void logError(String string, Throwable t) {
+        EclipseUtil.logError(string, t, provider.getPluginContextProvider());
+        
+    }
+
+    private void handleDelta(ProjectModelBuilderContext context, IResourceDelta delta) {
 		if (delta == null) {
 			return;
 		}
 		int flags = delta.getFlags();
 		if (flags == IResourceDelta.MARKERS) {
+		    /* markers are ignored */
 			return;
 		}
 		IResource resource = delta.getResource();
@@ -296,12 +305,17 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 			handleResource(context, resource);
 			return;
 		}
+		if (resource instanceof IProject) {
+		    /* project has either be closed or is opened*/
+		    System.err.println("delta project!");
+		}
 		for (IResourceDelta childDelta : delta.getAffectedChildren()) {
 			handleDelta(context, childDelta);
 		}
 	}
 
-	private class ProjectModelBuilderContext {
+
+    private class ProjectModelBuilderContext {
 		
 		private ProjectModelBuilderContext() {
 		}
