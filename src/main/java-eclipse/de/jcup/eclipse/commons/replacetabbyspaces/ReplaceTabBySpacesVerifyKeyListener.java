@@ -43,142 +43,150 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
             throw new IllegalArgumentException("editor may not be null");
         }
         this.editor = editor;
-        this.replaceTabBySpaceProvider=replaceTabBySpaceProvider;
-        this.caretInfoProvider=caretInfoProvider;
+        this.replaceTabBySpaceProvider = replaceTabBySpaceProvider;
+        this.caretInfoProvider = caretInfoProvider;
     }
 
     public void verifyKey(VerifyEvent event) {
-        /* we do not allow tab in any case ! */
-        if (event.character == '\t') {
-
-            event.doit = false;
-
-            EclipseUtil.safeAsyncExec(new Runnable() {
-
-                public void run() {
-                    
-                    ISelection selection = editor.getSelectionProvider().getSelection();
-                    if (!(selection instanceof ITextSelection)) {
-                        return;
-                    }
-                    ITextSelection ts = (ITextSelection) selection;
-                    IDocumentProvider dp = editor.getDocumentProvider();
-                    IDocument doc = dp.getDocument(editor.getEditorInput());
-                    int offset = ts.getOffset();
-                    if (offset == -1) {
-                        offset = caretInfoProvider.getLastCaretPosition();
-                    }
-
-                    boolean isMultiline = ts.getStartLine() != -1 && ts.getEndLine() > ts.getStartLine();
-                    boolean doIndent = event.stateMask == 0;
-                    boolean doOutdent = (event.stateMask & SWT.SHIFT) == SWT.SHIFT;
-                    
-                    if (!doIndent && !doOutdent) {
-                        return;
-                    }
-
-                    try {
-                        int numSpaces = replaceTabBySpaceProvider.getAmountOfSpacesToReplaceTab();
-                        if (numSpaces < 1) {
-                            return;
-                        }
-
-                        String tabReplacement = createTabReplacement(numSpaces);
-
-                        if (isMultiline) {
-                            handleMultiLineSelection(ts, doc, doIndent, numSpaces, tabReplacement);
-                        } else {
-                            handleSingleLineSelection(ts, doc, offset, doIndent, numSpaces, tabReplacement);
-                        }
-
-                    } catch (BadLocationException e) {
-                        EclipseUtil.logError("Cannot insert tab replacement at " + offset, e,replaceTabBySpaceProvider.getPluginContextProvider());
-                    }
-                }
-
-                private void handleSingleLineSelection(ITextSelection ts, IDocument doc, int offset, boolean doIndent, int numSpaces, String tabReplacement) throws BadLocationException {
-                    int newCaretPosition;
-                
-                    if (doIndent) {
-                        // replace the selected text with our TAB-equivalent string:
-                        doc.replace(offset, ts.getLength(), tabReplacement);
-                        newCaretPosition = offset + numSpaces;
-                    } else {
-                        // special behavior: for single-line outdent the logic is similar to the
-                        // multiline outdent except for the fact that the replaced block shall not be
-                        // selected entirely, instead only the caret will be adjusted:
-                
-                        int offsetBlockStart = doc.getLineOffset(ts.getStartLine());
-                        int offsetBlockEnd = doc.getLineOffset(ts.getEndLine()) + doc.getLineLength(ts.getEndLine());
-                        int lengthBlock = offsetBlockEnd - offsetBlockStart;
-                        if (lengthBlock <= 0) {
-                            return; // should never happen - just in case
-                        }
-                
-                        String line = doc.get(offsetBlockStart, lengthBlock);
-                        String replacement = outdent(line, numSpaces);
-                
-                        doc.replace(offsetBlockStart, lengthBlock, replacement);
-                
-                        if (offset > offsetBlockStart + numSpaces) {
-                            // there is enough space to move left the caret on the current line:
-                            newCaretPosition = offset - numSpaces;
-                        } else {
-                            // don't place the caret on the line before the current one:
-                            newCaretPosition = offsetBlockStart;
-                        }
-                    }
-                
-                    Control control = editor.getAdapter(Control.class);
-                    if (control instanceof StyledText) {
-                        StyledText t = (StyledText) control;
-                        t.setCaretOffset(newCaretPosition);
-                    }
-                }
-
-                private void handleMultiLineSelection(ITextSelection ts, IDocument doc, boolean doIndent, int numSpaces, String tabReplacement) throws BadLocationException {
-                    // in case there is a multiline selection, we mimic the Eclipse behavior
-                    // (which is quite standard across editors) and thus we:
-                    // - discard the actual selected text and consider instead only the
-                    // start/end line of the selection
-                    // - then we indent/outdent the whole block of lines
-
-                    int offsetBlockStart = doc.getLineOffset(ts.getStartLine());
-                    int offsetBlockEnd = doc.getLineOffset(ts.getEndLine()) + doc.getLineLength(ts.getEndLine());
-                    int lengthBlock = offsetBlockEnd - offsetBlockStart;
-                    if (lengthBlock <= 0) {
-                        return; // should never happen - just in case
-                    }
-                    String lineBlock = doc.get(offsetBlockStart, lengthBlock);
-
-                    // split each line and insert the additional indent in each line:
-                    String lines[] = lineBlock.split("\\r?\\n");
-                    ArrayList<String> replacement = new ArrayList<String>();
-                    for (String line : lines) {
-                        String newLine = null;
-                        if (doIndent) {
-                            newLine=indent(line, tabReplacement);
-                        }   
-                        else {
-                            newLine=outdent(line, numSpaces);
-                        }
-                        replacement.add(newLine);
-                    }
-
-                    String strReplacement = String.join("\n", replacement);
-                    // why next line with lenthBlock-1 ?
-                    // lineBlock is WITH lineEnding ending. 
-                    // String.join is without last \n, to keep the last line ending we use lengthBlock-1...
-                    doc.replace(offsetBlockStart, lengthBlock-1, strReplacement);
-
-                    // select the whole block we just indented/outdented:
-                    editor.selectAndReveal(offsetBlockStart, strReplacement.length());
-                }
-            });
+        if (event.character != '\t') {
+            return;
         }
+        if (!replaceTabBySpaceProvider.isReplaceTabBySpacesEnabled()) {
+            return;
+        }
+
+        event.doit = false;
+
+        EclipseUtil.safeAsyncExec(()->{
+
+                ISelection selection = editor.getSelectionProvider().getSelection();
+                if (!(selection instanceof ITextSelection)) {
+                    return;
+                }
+                
+                ITextSelection ts = (ITextSelection) selection;
+                IDocumentProvider dp = editor.getDocumentProvider();
+                IDocument doc = dp.getDocument(editor.getEditorInput());
+                int offset = ts.getOffset();
+                if (offset == -1) {
+                    offset = caretInfoProvider.getLastCaretPosition();
+                }
+
+                boolean isMultiline = ts.getStartLine() != -1 && ts.getEndLine() > ts.getStartLine();
+                boolean doIndent = event.stateMask == 0;
+                boolean doOutdent = (event.stateMask & SWT.SHIFT) == SWT.SHIFT;
+
+                if (!doIndent && !doOutdent) {
+                    return;
+                }
+
+                handleIndentOutdent(ts, doc, offset, isMultiline, doIndent);
+            }
+
+           
+        );
 
     }
 
+    private void handleIndentOutdent(ITextSelection ts, IDocument doc, int offset, boolean isMultiline, boolean doIndent) {
+        try {
+            int numSpaces = replaceTabBySpaceProvider.getAmountOfSpacesToReplaceTab();
+            if (numSpaces < 1) {
+                return;
+            }
+
+            String tabReplacement = createTabReplacement(numSpaces);
+
+            if (isMultiline) {
+                handleMultiLineSelection(ts, doc, doIndent, numSpaces, tabReplacement);
+            } else {
+                handleSingleLineSelection(ts, doc, offset, doIndent, numSpaces, tabReplacement);
+            }
+
+        } catch (BadLocationException e) {
+            EclipseUtil.logError("Cannot insert tab replacement at " + offset, e, replaceTabBySpaceProvider.getPluginContextProvider());
+        }
+    }
+
+    private void handleSingleLineSelection(ITextSelection ts, IDocument doc, int offset, boolean doIndent, int numSpaces, String tabReplacement) throws BadLocationException {
+        int newCaretPosition;
+
+        if (doIndent) {
+            // replace the selected text with our TAB-equivalent string:
+            doc.replace(offset, ts.getLength(), tabReplacement);
+            newCaretPosition = offset + numSpaces;
+        } else {
+            // special behavior: for single-line outdent the logic is similar to the
+            // multiline outdent except for the fact that the replaced block shall not be
+            // selected entirely, instead only the caret will be adjusted:
+
+            int offsetBlockStart = doc.getLineOffset(ts.getStartLine());
+            int offsetBlockEnd = doc.getLineOffset(ts.getEndLine()) + doc.getLineLength(ts.getEndLine());
+            int lengthBlock = offsetBlockEnd - offsetBlockStart;
+            if (lengthBlock <= 0) {
+                return; // should never happen - just in case
+            }
+
+            String line = doc.get(offsetBlockStart, lengthBlock);
+            String replacement = outdent(line, numSpaces);
+
+            doc.replace(offsetBlockStart, lengthBlock, replacement);
+
+            if (offset > offsetBlockStart + numSpaces) {
+                // there is enough space to move left the caret on the current line:
+                newCaretPosition = offset - numSpaces;
+            } else {
+                // don't place the caret on the line before the current one:
+                newCaretPosition = offsetBlockStart;
+            }
+        }
+
+        Control control = editor.getAdapter(Control.class);
+        if (control instanceof StyledText) {
+            StyledText t = (StyledText) control;
+            t.setCaretOffset(newCaretPosition);
+        }
+    }
+
+    private void handleMultiLineSelection(ITextSelection ts, IDocument doc, boolean doIndent, int numSpaces, String tabReplacement) throws BadLocationException {
+        // in case there is a multiline selection, we mimic the Eclipse behavior
+        // (which is quite standard across editors) and thus we:
+        // - discard the actual selected text and consider instead only the
+        // start/end line of the selection
+        // - then we indent/outdent the whole block of lines
+
+        int offsetBlockStart = doc.getLineOffset(ts.getStartLine());
+        int offsetBlockEnd = doc.getLineOffset(ts.getEndLine()) + doc.getLineLength(ts.getEndLine());
+        int lengthBlock = offsetBlockEnd - offsetBlockStart;
+        if (lengthBlock <= 0) {
+            return; // should never happen - just in case
+        }
+        String lineBlock = doc.get(offsetBlockStart, lengthBlock);
+
+        // split each line and insert the additional indent in each line:
+        String lines[] = lineBlock.split("\\r?\\n");
+        ArrayList<String> replacement = new ArrayList<String>();
+        for (String line : lines) {
+            String newLine = null;
+            if (doIndent) {
+                newLine = indent(line, tabReplacement);
+            } else {
+                newLine = outdent(line, numSpaces);
+            }
+            replacement.add(newLine);
+        }
+
+        String strReplacement = String.join("\n", replacement);
+        // why next line with lenthBlock-1 ?
+        // lineBlock is WITH lineEnding ending.
+        // String.join is without last \n, to keep the last line ending we use
+        // lengthBlock-1...
+        doc.replace(offsetBlockStart, lengthBlock - 1, strReplacement);
+
+        // select the whole block we just indented/outdented:
+        editor.selectAndReveal(offsetBlockStart, strReplacement.length());
+    }
+    
     private String createTabReplacement(int spaces) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < spaces; i++) {
