@@ -95,12 +95,10 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
                 return;
             }
 
-            String tabReplacement = createTabReplacement(numSpaces);
-
             if (isMultiline) {
-                handleMultiLineSelection(ts, doc, doIndent, numSpaces, tabReplacement);
+                handleMultiLineSelection(ts, doc, doIndent, numSpaces);
             } else {
-                handleSingleLineSelection(ts, doc, offset, doIndent, numSpaces, tabReplacement);
+                handleSingleLineSelection(ts, doc, offset, doIndent, numSpaces);
             }
 
         } catch (BadLocationException e) {
@@ -108,10 +106,11 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         }
     }
 
-    private void handleSingleLineSelection(ITextSelection ts, IDocument doc, int offset, boolean doIndent, int numSpaces, String tabReplacement) throws BadLocationException {
+    private void handleSingleLineSelection(ITextSelection ts, IDocument doc, int offset, boolean doIndent, int numSpaces) throws BadLocationException {
         int newCaretPosition;
 
         if (doIndent) {
+            String tabReplacement = createTabReplacement(numSpaces);
             // replace the selected text with our TAB-equivalent string:
             doc.replace(offset, ts.getLength(), tabReplacement);
             newCaretPosition = offset + numSpaces;
@@ -148,7 +147,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         }
     }
 
-    private void handleMultiLineSelection(ITextSelection ts, IDocument doc, boolean doIndent, int numSpaces, String tabReplacement) throws BadLocationException {
+    private void handleMultiLineSelection(ITextSelection ts, IDocument doc, boolean doIndent, int numSpaces) throws BadLocationException {
         // in case there is a multiline selection, we mimic the Eclipse behavior
         // (which is quite standard across editors) and thus we:
         // - discard the actual selected text and consider instead only the
@@ -163,6 +162,19 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         }
         String lineBlock = doc.get(offsetBlockStart, lengthBlock);
 
+        String strReplacement = createReplacementString(doIndent, numSpaces, lineBlock);
+        // why next line with lenthBlock-1 ?
+        // lineBlock is WITH lineEnding ending.
+        // String.join is without last \n, to keep the last line ending we use
+        // lengthBlock-1...
+        doc.replace(offsetBlockStart, lengthBlock - 1, strReplacement);
+
+        // select the whole block we just indented/outdented:
+        editor.selectAndReveal(offsetBlockStart, strReplacement.length());
+    }
+
+    private String createReplacementString(boolean doIndent, int numSpaces, String lineBlock) {
+        String tabReplacement = createTabReplacement(numSpaces);
         // split each line and insert the additional indent in each line:
         String lines[] = lineBlock.split("\\r?\\n");
         ArrayList<String> replacement = new ArrayList<String>();
@@ -177,14 +189,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         }
 
         String strReplacement = String.join("\n", replacement);
-        // why next line with lenthBlock-1 ?
-        // lineBlock is WITH lineEnding ending.
-        // String.join is without last \n, to keep the last line ending we use
-        // lengthBlock-1...
-        doc.replace(offsetBlockStart, lengthBlock - 1, strReplacement);
-
-        // select the whole block we just indented/outdented:
-        editor.selectAndReveal(offsetBlockStart, strReplacement.length());
+        return strReplacement;
     }
     
     private String createTabReplacement(int spaces) {
