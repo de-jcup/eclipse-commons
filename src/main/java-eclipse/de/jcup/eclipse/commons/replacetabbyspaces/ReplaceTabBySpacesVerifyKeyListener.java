@@ -33,7 +33,7 @@ import de.jcup.eclipse.commons.ui.EclipseUtil;
 class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
 
     private final ITextEditor editor;
-    private TabReplaceBySpacesStringBuilder indentionHelper;
+    private TabReplaceBySpacesStringBuilder stringBuilder;
     private ReplaceTabBySpacesProvider replaceTabBySpaceProvider;
     private CaretInfoProvider caretInfoProvider;
 
@@ -41,7 +41,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         if (editor == null) {
             throw new IllegalArgumentException("editor may not be null");
         }
-        this.indentionHelper = new TabReplaceBySpacesStringBuilder();
+        this.stringBuilder = new TabReplaceBySpacesStringBuilder();
         this.editor = editor;
         this.replaceTabBySpaceProvider = replaceTabBySpaceProvider;
         this.caretInfoProvider = caretInfoProvider;
@@ -109,7 +109,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         int newCaretPosition;
 
         if (doIndent) {
-            String tabReplacement = indentionHelper.createTabReplacement(numSpaces);
+            String tabReplacement = stringBuilder.createTabReplacement(numSpaces);
             // replace the selected text with our TAB-equivalent string:
             doc.replace(offset, ts.getLength(), tabReplacement);
             newCaretPosition = offset + numSpaces;
@@ -126,7 +126,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
             }
 
             String line = doc.get(offsetBlockStart, lengthBlock);
-            String replacement = indentionHelper.outdent(line, numSpaces);
+            String replacement = stringBuilder.outdent(line, numSpaces);
 
             doc.replace(offsetBlockStart, lengthBlock, replacement);
 
@@ -161,7 +161,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         }
         String lineBlock = doc.get(offsetBlockStart, lengthBlock);
 
-        String strReplacement = indentionHelper.createBlockReplacement(doIndent, numSpaces, lineBlock);
+        String strReplacement = stringBuilder.createBlockReplacement(doIndent, numSpaces, lineBlock);
         // why next line with lenthBlock-1 ?
         // lineBlock is WITH lineEnding ending.
         // String.join is without last \n, to keep the last line ending we use
