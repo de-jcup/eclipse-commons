@@ -15,8 +15,6 @@
  */
 package de.jcup.eclipse.commons.replacetabbyspaces;
 
-import java.util.ArrayList;
-
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
@@ -35,6 +33,7 @@ import de.jcup.eclipse.commons.ui.EclipseUtil;
 class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
 
     private final ITextEditor editor;
+    private TabReplaceBySpacesStringBuilder indentionHelper;
     private ReplaceTabBySpacesProvider replaceTabBySpaceProvider;
     private CaretInfoProvider caretInfoProvider;
 
@@ -42,6 +41,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         if (editor == null) {
             throw new IllegalArgumentException("editor may not be null");
         }
+        this.indentionHelper = new TabReplaceBySpacesStringBuilder();
         this.editor = editor;
         this.replaceTabBySpaceProvider = replaceTabBySpaceProvider;
         this.caretInfoProvider = caretInfoProvider;
@@ -82,7 +82,6 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
 
                 handleIndentOutdent(ts, doc, offset, isMultiline, doIndent);
             }
-
            
         );
 
@@ -110,7 +109,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         int newCaretPosition;
 
         if (doIndent) {
-            String tabReplacement = createTabReplacement(numSpaces);
+            String tabReplacement = indentionHelper.createTabReplacement(numSpaces);
             // replace the selected text with our TAB-equivalent string:
             doc.replace(offset, ts.getLength(), tabReplacement);
             newCaretPosition = offset + numSpaces;
@@ -127,7 +126,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
             }
 
             String line = doc.get(offsetBlockStart, lengthBlock);
-            String replacement = outdent(line, numSpaces);
+            String replacement = indentionHelper.outdent(line, numSpaces);
 
             doc.replace(offsetBlockStart, lengthBlock, replacement);
 
@@ -162,7 +161,7 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         }
         String lineBlock = doc.get(offsetBlockStart, lengthBlock);
 
-        String strReplacement = createReplacementString(doIndent, numSpaces, lineBlock);
+        String strReplacement = indentionHelper.createBlockReplacement(doIndent, numSpaces, lineBlock);
         // why next line with lenthBlock-1 ?
         // lineBlock is WITH lineEnding ending.
         // String.join is without last \n, to keep the last line ending we use
@@ -173,51 +172,5 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
         editor.selectAndReveal(offsetBlockStart, strReplacement.length());
     }
 
-    private String createReplacementString(boolean doIndent, int numSpaces, String lineBlock) {
-        String tabReplacement = createTabReplacement(numSpaces);
-        // split each line and insert the additional indent in each line:
-        String lines[] = lineBlock.split("\\r?\\n");
-        ArrayList<String> replacement = new ArrayList<String>();
-        for (String line : lines) {
-            String newLine = null;
-            if (doIndent) {
-                newLine = indent(line, tabReplacement);
-            } else {
-                newLine = outdent(line, numSpaces);
-            }
-            replacement.add(newLine);
-        }
-
-        String strReplacement = String.join("\n", replacement);
-        return strReplacement;
-    }
     
-    private String createTabReplacement(int spaces) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < spaces; i++) {
-            sb.append(' ');
-        }
-        return sb.toString();
-    }
-
-    private String outdent(String line, int spaces) {
-        int numLeadingSpaces = 0;
-        for (int i = 0; i < spaces && i < line.length(); i++) {
-            if (line.charAt(i) == ' ')
-                numLeadingSpaces++;
-            else
-                break;
-        }
-
-        // most editors, including default Eclipse text editor, will outdent a line even
-        // if
-        // the number of leading spaces is smaller than the configured TAB length:
-        // in such a case they simply remove all leading spaces:
-        return line.substring(Math.min(numLeadingSpaces, spaces));
-    }
-
-    // just for symmetry with outdent():
-    private String indent(String line, String toInsert) {
-        return toInsert + line;
-    }
 }
