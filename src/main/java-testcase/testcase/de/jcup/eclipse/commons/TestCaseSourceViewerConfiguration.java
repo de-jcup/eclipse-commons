@@ -2,6 +2,8 @@ package testcase.de.jcup.eclipse.commons;
 
 import org.eclipse.jface.text.ITextHover;
 import org.eclipse.jface.text.TextAttribute;
+import org.eclipse.jface.text.contentassist.ContentAssistant;
+import org.eclipse.jface.text.contentassist.IContentAssistant;
 import org.eclipse.jface.text.presentation.IPresentationReconciler;
 import org.eclipse.jface.text.presentation.PresentationReconciler;
 import org.eclipse.jface.text.source.ISourceViewer;
@@ -18,7 +20,7 @@ import de.jcup.eclipse.commons.presentation.PresentationSupport;
 
 public class TestCaseSourceViewerConfiguration extends SourceViewerConfiguration  implements TooltipTextSupportPreferences{
 	private TextAttribute defaultTextAttribute;
-
+	
 	public TestCaseSourceViewerConfiguration() {
 		this.defaultTextAttribute = new TextAttribute(
 				Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
@@ -83,6 +85,17 @@ public class TestCaseSourceViewerConfiguration extends SourceViewerConfiguration
 	@Override
 	public DocumentKeyWord[] getAllKeywords() {
 		return TestCaseKeywords.values();
+	}
+	
+	@Override
+	public IContentAssistant getContentAssistant(ISourceViewer sourceViewer) {
+	    ContentAssistant assistant= new ContentAssistant();
+        assistant.setDocumentPartitioning(getConfiguredDocumentPartitioning(sourceViewer));
+
+        TestcaseActivator.getDefault().getTemplateSupportProvider().getSupport().install(assistant,getInformationControlCreator(sourceViewer));
+      
+
+        return assistant;
 	}
 
 }

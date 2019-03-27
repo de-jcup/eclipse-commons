@@ -59,6 +59,16 @@
          >
       </page>
     </extension>
+     <extension
+      point = "org.eclipse.ui.preferencePages">
+      <page
+         id="testcase.de.jcup.eclipse.commons.TestcaseTemplatePreferencePage"
+         class="testcase.de.jcup.eclipse.commons.TestcaseTemplatePreferencePage"
+         name="Testcase preference page for TEMPLATES"
+         category="testcase.de.jcup.eclipse.commons.TestcaseTodoTaskPreferencePage"
+         >
+      </page>
+    </extension>
     <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer

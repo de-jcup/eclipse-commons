@@ -8,6 +8,8 @@ import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 import de.jcup.eclipse.commons.resource.EclipseResourceInputStreamProvider;
 import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvider;
+import de.jcup.eclipse.commons.templates.TemplateSupportConfig;
+import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
 import de.jcup.eclipse.commons.ui.PluginContextProviderRegistry;
 
 /**
@@ -20,7 +22,8 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 
 	// The shared instance
 	private static TestcaseActivator plugin;
-
+	
+	private TemplateSupportProvider templateSupportProvider;
 
 	private AbstractConfigurableTaskTagsSupportProvider taskSupportProvider;
 
@@ -35,6 +38,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 		testCaseColorManager = new TestCaseColorManager();
 		taskSupportProvider = new TestcaseTaskTagsSupportProvider(this) ;
 		projectModelSupportProvider = new TestCaseProjectModelBuilderSupportProvider(this);
+		templateSupportProvider = new TemplateSupportProvider(new TestTemplateSupportConfig(),this);
 		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
 		PluginContextProviderRegistry.register(this);
 		
@@ -56,6 +60,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 		plugin = this;
 		taskSupportProvider.getTodoTaskSupport().install();
 		projectModelSupportProvider.getProjectModelBuilderSupport().install();
+		
 	}
 
 	public void stop(BundleContext context) throws Exception {
@@ -64,7 +69,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 		projectModelSupportProvider.getProjectModelBuilderSupport().uninstall();
 		super.stop(context);
 	}
-
+	
 	/**
 	 * Returns the shared instance
 	 *
@@ -98,4 +103,8 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 	public TestCaseProjectModel getProjectModel() {
 		return getProjectModelSupportProvider().getProjectModelBuilderSupport().getModel();
 	}
+	
+    public TemplateSupportProvider getTemplateSupportProvider() {
+        return templateSupportProvider;
+    }
 }

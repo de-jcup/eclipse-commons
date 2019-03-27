@@ -11,13 +11,15 @@ import org.eclipse.ui.editors.text.TextEditor;
 
 import de.jcup.eclipse.commons.EclipseResourceHelper;
 import de.jcup.eclipse.commons.PluginContextProvider;
-import de.jcup.eclipse.commons.replacetabbyspaces.ReplaceTabBySpacesSupport;
 import de.jcup.eclipse.commons.replacetabbyspaces.ReplaceTabBySpacesProvider;
+import de.jcup.eclipse.commons.replacetabbyspaces.ReplaceTabBySpacesSupport;
+import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 public class TestcaseEditor extends TextEditor{
     
     private ReplaceTabBySpacesSupport replaceTabBySpaceSupport = new ReplaceTabBySpacesSupport();
+    
 	public TestcaseEditor() {
 		setSourceViewerConfiguration(new TestCaseSourceViewerConfiguration());
 	}
