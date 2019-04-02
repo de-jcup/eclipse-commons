@@ -1,7 +1,5 @@
 package de.jcup.eclipse.commons.templates;
 
-import java.util.List;
-
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.text.IDocument;

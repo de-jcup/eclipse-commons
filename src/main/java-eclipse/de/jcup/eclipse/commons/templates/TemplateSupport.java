@@ -3,7 +3,6 @@ package de.jcup.eclipse.commons.templates;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
@@ -85,18 +84,23 @@ public class TemplateSupport {
 
     /**
      * Call this inside {@link SourceViewerConfiguration#getContentAssistant(org.eclipse.jface.text.source.ISourceViewer)}
+     * when you want to install ONLY this to content assistant. Will setup popup oritentation and also information control
      * @param assistant
      * @param informationControlCreator
      */
     public void install(ContentAssistant assistant, IInformationControlCreator informationControlCreator) {
-        if (config.isCompletionDisabled()) {
-            return;
-        }
+        installProcessor(assistant);
+        installUI(assistant, informationControlCreator);
+    }
+
+    private void installProcessor(ContentAssistant assistant) {
         for (String id: config.getContentTypes()) {
             assistant.setContentAssistProcessor(processor, id);
         }
+    }
+
+    private void installUI(ContentAssistant assistant, IInformationControlCreator informationControlCreator) {
         assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
         assistant.setInformationControlCreator(informationControlCreator);
-        
     }
 }
