@@ -6,9 +6,12 @@ problem of too much copy & waste in de-jcup plugins. Some bigger and trick parts
 here as a simple library which can be used by plugins.
 
 ## Current version
-0.5.0 (under construction)
+0.5.0
 - ReplaceTabBySpaceSupport
 - CaretInfosupport
+- Template support
+- Handling utf-8 in tooltips
+- Eclipse util improvments
 
 ## Howto use
 See Testcase plugin - there are all features used.
