@@ -1,10 +1,12 @@
-package testcase.de.jcup.eclipse.commons;
+package testcase.de.jcup.eclipse.commons.projectmodelbuilder;
 
 import org.eclipse.core.resources.IFile;
 
 import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.projectmodelbuilder.AbstractConfigurableProjectModelBuilderSupportProvider;
 import de.jcup.eclipse.commons.projectmodelbuilder.ProjectModelBuilder;
+import testcase.de.jcup.eclipse.commons.TestCaseKeyword;
+import testcase.de.jcup.eclipse.commons.TestCaseKeywords;
 
 public class TestCaseProjectModelBuilderSupportProvider extends AbstractConfigurableProjectModelBuilderSupportProvider<TestCaseProjectModel>{
 

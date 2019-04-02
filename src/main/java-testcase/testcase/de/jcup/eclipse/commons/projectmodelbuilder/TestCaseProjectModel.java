@@ -1,4 +1,4 @@
-package testcase.de.jcup.eclipse.commons;
+package testcase.de.jcup.eclipse.commons.projectmodelbuilder;
 
 import java.util.HashMap;
 import java.util.Map;

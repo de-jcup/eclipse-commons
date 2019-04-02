@@ -3,17 +3,18 @@ package testcase.de.jcup.eclipse.commons;
 import java.io.File;
 
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.editors.text.TextEditor;
+import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 import de.jcup.eclipse.commons.EclipseResourceHelper;
 import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.replacetabbyspaces.ReplaceTabBySpacesProvider;
 import de.jcup.eclipse.commons.replacetabbyspaces.ReplaceTabBySpacesSupport;
-import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 public class TestcaseEditor extends TextEditor{
@@ -61,6 +62,18 @@ public class TestcaseEditor extends TextEditor{
 			EclipseUtil.logError("Was not able to get file of editor", e,TestcaseActivator.getDefault());
 		}
 	}
+	
+	@Override
+    protected void createActions() {
+        super.createActions();
+
+        IAction action= getAction(ITextEditorActionConstants.CONTENT_ASSIST);
+        if (action != null) {
+            action.setText("Testcase template proposal label");
+            action.setToolTipText("Testcase template proposal tooltip");
+            action.setDescription("Testcase template proposal description");
+        }
+}
 	
 	@Override
 	protected void handleEditorInputChanged() {

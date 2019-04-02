@@ -8,9 +8,12 @@ import de.jcup.eclipse.commons.PluginContextProvider;
 import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 import de.jcup.eclipse.commons.resource.EclipseResourceInputStreamProvider;
 import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvider;
-import de.jcup.eclipse.commons.templates.TemplateSupportConfig;
 import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
 import de.jcup.eclipse.commons.ui.PluginContextProviderRegistry;
+import testcase.de.jcup.eclipse.commons.projectmodelbuilder.TestCaseProjectModel;
+import testcase.de.jcup.eclipse.commons.projectmodelbuilder.TestCaseProjectModelBuilderSupportProvider;
+import testcase.de.jcup.eclipse.commons.tasktags.TestcaseTaskTagsSupportProvider;
+import testcase.de.jcup.eclipse.commons.template.TestCaseTemplateSupportConfig;
 
 /**
  * The activator class controls the plug-in life cycle.
@@ -38,7 +41,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 		testCaseColorManager = new TestCaseColorManager();
 		taskSupportProvider = new TestcaseTaskTagsSupportProvider(this) ;
 		projectModelSupportProvider = new TestCaseProjectModelBuilderSupportProvider(this);
-		templateSupportProvider = new TemplateSupportProvider(new TestTemplateSupportConfig(),this);
+		templateSupportProvider = new TemplateSupportProvider(new TestCaseTemplateSupportConfig(),this);
 		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
 		PluginContextProviderRegistry.register(this);
 		

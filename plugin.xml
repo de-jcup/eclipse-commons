@@ -47,6 +47,43 @@
             id="testcase.de.jcup.eclipse.commons.TestcaseEditor">
       </editor>
    </extension>
+    
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <!--                          TEMPLATE                                    -->
+   <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+   <extension
+         point="org.eclipse.ui.editors.templates">
+      <contextType
+            name="Testcase Template"
+            class="testcase.de.jcup.eclipse.commons.template.TestcaseTemplateContextType"
+            id="testcase.template.context.alpha">
+      </contextType>
+      <template
+            name="tc1"
+            icon="icons/template.png"
+            description="TC1 description"
+            contextTypeId="testcase.template.context.alpha"
+            id="testcase.template.tc1">
+         <pattern>I am the pattern
+Line2
+</pattern>
+      </template>
+      <!--
+      <resolver
+            name="%ant.resolvers.src"
+            type="src"
+            icon="icons/resolver.png"
+            description="%ant.resolvers.src.description"
+            contextTypeId="org.eclipse.ui.examples.templateeditor.xml"
+            class="org.eclipse.ui.examples.templateeditor.template.AntVariableResolver">
+      </resolver>
+      <include
+            file="templates/ant.xml"
+            translations="$nl$/templates/ant.properties">
+      </include>
+      -->
+</extension>
+
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
    <!--                          PREFERENCES                       			 -->
    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ --> 
@@ -54,7 +91,7 @@
       point = "org.eclipse.ui.preferencePages">
       <page
          id="testcase.de.jcup.eclipse.commons.TestcaseTodoTaskPreferencePage"
-         class="testcase.de.jcup.eclipse.commons.TestcaseTaskTagsPreferencePage"
+         class="testcase.de.jcup.eclipse.commons.tasktags.TestcaseTaskTagsPreferencePage"
          name="Testcase preference page for TODOs"
          >
       </page>
@@ -63,7 +100,7 @@
       point = "org.eclipse.ui.preferencePages">
       <page
          id="testcase.de.jcup.eclipse.commons.TestcaseTemplatePreferencePage"
-         class="testcase.de.jcup.eclipse.commons.TestcaseTemplatePreferencePage"
+         class="testcase.de.jcup.eclipse.commons.template.TestcaseTemplatePreferencePage"
          name="Testcase preference page for TEMPLATES"
          category="testcase.de.jcup.eclipse.commons.TestcaseTodoTaskPreferencePage"
          >
@@ -72,7 +109,7 @@
     <extension
          point="org.eclipse.core.runtime.preferences">
       <initializer
-            class="testcase.de.jcup.eclipse.commons.TestcaseTaskTagsPreferenceInitializer">
+            class="testcase.de.jcup.eclipse.commons.tasktags.TestcaseTaskTagsPreferenceInitializer">
       </initializer>
    </extension>
   </plugin>

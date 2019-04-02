@@ -12,4 +12,9 @@ public abstract class TemplateSupportPreferencePage extends TemplatePreferencePa
         setTemplateStore(provider.getSupport().getTemplateStore());
         setContextTypeRegistry(provider.getSupport().getContextTypeRegistry());
     }
+    
+    @Override
+    protected boolean isShowFormatterSetting() {
+        return false;
+    }
 }

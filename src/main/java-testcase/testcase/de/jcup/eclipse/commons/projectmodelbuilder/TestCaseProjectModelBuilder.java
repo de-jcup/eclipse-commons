@@ -1,4 +1,4 @@
-package testcase.de.jcup.eclipse.commons;
+package testcase.de.jcup.eclipse.commons.projectmodelbuilder;
 
 import java.util.Map;
 
@@ -7,6 +7,7 @@ import org.eclipse.core.resources.IResource;
 import de.jcup.eclipse.commons.projectmodelbuilder.AbstractProjectModelBuilder;
 import de.jcup.eclipse.commons.projectmodelbuilder.ModelUpdateAction;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
+import testcase.de.jcup.eclipse.commons.TestcaseActivator;
 
 public class TestCaseProjectModelBuilder extends AbstractProjectModelBuilder<TestCaseProjectModel> {
 

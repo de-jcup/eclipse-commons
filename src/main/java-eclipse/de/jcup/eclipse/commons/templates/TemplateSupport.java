@@ -3,9 +3,11 @@ package de.jcup.eclipse.commons.templates;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.IInformationControlCreator;
 import org.eclipse.jface.text.contentassist.ContentAssistant;
 import org.eclipse.jface.text.contentassist.IContentAssistant;
+import org.eclipse.jface.text.source.SourceViewerConfiguration;
 import org.eclipse.jface.text.templates.TemplateCompletionProcessor;
 import org.eclipse.jface.text.templates.persistence.TemplateStore;
 import org.eclipse.ui.editors.text.templates.ContributionContextTypeRegistry;
@@ -81,12 +83,18 @@ public class TemplateSupport {
         return provider;
     }
 
+    /**
+     * Call this inside {@link SourceViewerConfiguration#getContentAssistant(org.eclipse.jface.text.source.ISourceViewer)}
+     * @param assistant
+     * @param informationControlCreator
+     */
     public void install(ContentAssistant assistant, IInformationControlCreator informationControlCreator) {
-        for (String id: config.getContextTypes()) {
+        if (config.isCompletionDisabled()) {
+            return;
+        }
+        for (String id: config.getContentTypes()) {
             assistant.setContentAssistProcessor(processor, id);
         }
-        /* TODO ALBERT, 27.03.2019 - improve - not only CONTEXT_INFO_ABOVE */
-        /* TODO ALBERT, 27.03.2019 - hmm.. is it really correct to use this support for all these editor instances?*/
         assistant.setContextInformationPopupOrientation(IContentAssistant.CONTEXT_INFO_ABOVE);
         assistant.setInformationControlCreator(informationControlCreator);
         

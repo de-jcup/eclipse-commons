@@ -1,8 +1,9 @@
-package testcase.de.jcup.eclipse.commons;
+package testcase.de.jcup.eclipse.commons.tasktags;
 
 import org.eclipse.core.resources.IFile;
 
 import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvider;
+import testcase.de.jcup.eclipse.commons.TestcaseActivator;
 
 public class TestcaseTaskTagsSupportProvider extends AbstractConfigurableTaskTagsSupportProvider{
 

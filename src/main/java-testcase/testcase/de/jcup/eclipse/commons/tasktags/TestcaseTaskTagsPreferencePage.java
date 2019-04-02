@@ -1,6 +1,7 @@
-package testcase.de.jcup.eclipse.commons;
+package testcase.de.jcup.eclipse.commons.tasktags;
 
 import de.jcup.eclipse.commons.tasktags.AbstractTaskTagsPreferencePage;
+import testcase.de.jcup.eclipse.commons.TestcaseActivator;
 
 public class TestcaseTaskTagsPreferencePage extends AbstractTaskTagsPreferencePage{
 

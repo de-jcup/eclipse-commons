@@ -16,6 +16,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 
+import testcase.de.jcup.eclipse.commons.projectmodelbuilder.TestCaseProjectModel;
+
 public class TestcaseView extends ViewPart {
 
 	private IContentProvider contentProvider;
