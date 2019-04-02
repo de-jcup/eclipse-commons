@@ -6,12 +6,7 @@ problem of too much copy & waste in de-jcup plugins. Some bigger and trick parts
 here as a simple library which can be used by plugins.
 
 ## Current version
-0.5.0
-- ReplaceTabBySpaceSupport
-- CaretInfosupport
-- Template support
-- Handling utf-8 in tooltips
-- Eclipse util improvments
+0.5.1 Bugfix on Template support
 
 ## Howto use
 See Testcase plugin - there are all features used.
@@ -23,6 +18,13 @@ See Testcase plugin - there are all features used.
 
 
 # History:
+0.5.0
+- ReplaceTabBySpaceSupport
+- CaretInfosupport
+- Template support
+- Handling utf-8 in tooltips
+- Eclipse util improvments
+
 0.4.1 implemented hyperlinking colors using colors from jface, see https://github.com/de-jcup/eclipse-commons/issues/7
 0.4.0 improved html links, improved testcase
 0.3.x task support
