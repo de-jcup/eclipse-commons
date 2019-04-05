@@ -3,9 +3,10 @@
 Some keywords:
 ==============
 
-word1
+word1  //hover this an any you got a tooltip
+WORD1  //hover this an any you got a tooltip
 
-word2
+word2  //try CTRL+SPACE on word2 and you will get a nice code completion with info
 
 word3
 
@@ -14,3 +15,6 @@ word1
 !! TODO Albert,2019-25-02: update this if keywords are added
 
 !! FIXME Albert,2019-25-02: Just an example for a FIXME
+
+< some bold info >
+** green is nice and bold **
