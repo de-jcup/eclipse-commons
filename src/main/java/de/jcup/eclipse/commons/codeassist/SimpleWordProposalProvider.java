@@ -22,4 +22,23 @@ public class SimpleWordProposalProvider implements ProposalProvider{
 		return Collections.singletonList(word+" ");
 	}
 
+    @Override
+    public int compareTo(ProposalProvider o) {
+        if (o==null) {
+            return 1;
+        }
+        String label = getLabel();
+        String label2 = o.getLabel();
+        if (label==null) {
+            if (label2==null){
+                return 0;
+            }
+            return -1;
+        }
+        if (label2==null){
+            return 1;
+        }
+        return label.compareTo(label2);
+    }
+
 }

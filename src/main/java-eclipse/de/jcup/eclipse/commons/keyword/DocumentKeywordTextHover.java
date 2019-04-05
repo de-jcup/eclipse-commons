@@ -26,6 +26,7 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
+import org.junit.FixMethodOrder;
 
 import de.jcup.eclipse.commons.SimpleStringUtils;
 import de.jcup.eclipse.commons.WhitespaceWordEndDetector;
@@ -96,7 +97,12 @@ public class DocumentKeywordTextHover implements ITextHover, ITextHoverExtension
 		int offset = hoverRegion.getOffset();
 		String word = SimpleStringUtils.nextReducedVariableWord(text, offset,reducedWordEndDetector);
 		if (word.isEmpty()){
-			/* special case for headlines - reduction detector does remove "=" always */
+			/* FIXME ALBERT, 2019-04-06: this is asciidoctor editor specific and should 
+			 * be removed. Also html building shall be a generic approach - maybe interface
+			 * necessary or extension of configuration
+			 */
+		    
+		    /* special case for headlines - reduction detector does remove "=" always */
 			String section = SimpleStringUtils.nextWord(text, offset, WHITE_SPACE_END_DETECTOR);
 			if (section.startsWith("=")){
 				StringBuilder sb = new StringBuilder();
@@ -122,9 +128,15 @@ public class DocumentKeywordTextHover implements ITextHover, ITextHoverExtension
 		}
 
 		for (DocumentKeyWord keyword :preferences.getAllKeywords()) {
-			if (word.equals(keyword.getText())) {
-				return buildHoverInfo(keyword);
-			}
+		    if (preferences.isIgnoreCaseOnKeywordText()) {
+		        if (word.equalsIgnoreCase(keyword.getText())) {
+                    return buildHoverInfo(keyword);
+                }
+		    }else {
+		        if (word.equals(keyword.getText())) {
+		            return buildHoverInfo(keyword);
+		        }
+		    }
 		}
 
 		return "";

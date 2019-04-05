@@ -46,6 +46,9 @@ public class MultipleContentAssistProcessor implements IContentAssistProcessor, 
         List<IContextInformation> list = new ArrayList<IContextInformation>();
         for (IContentAssistProcessor proc: assistProcessors) {
             IContextInformation[] computed = proc.computeContextInformation(viewer, offset);
+            if (computed==null) {
+                continue;
+            }
             for (IContextInformation p: computed) {
                 list.add(p);
             }

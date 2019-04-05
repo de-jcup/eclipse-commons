@@ -18,4 +18,8 @@ public interface TooltipTextSupportPreferences {
 	 */
 	DocumentKeyWord[] getAllKeywords();
 
+	default boolean isIgnoreCaseOnKeywordText() {
+	    return false;
+	}
+
 }

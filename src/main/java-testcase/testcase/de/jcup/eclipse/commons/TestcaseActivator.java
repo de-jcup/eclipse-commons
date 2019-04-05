@@ -63,7 +63,6 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 		plugin = this;
 		taskSupportProvider.getTodoTaskSupport().install();
 		projectModelSupportProvider.getProjectModelBuilderSupport().install();
-		
 	}
 
 	public void stop(BundleContext context) throws Exception {
