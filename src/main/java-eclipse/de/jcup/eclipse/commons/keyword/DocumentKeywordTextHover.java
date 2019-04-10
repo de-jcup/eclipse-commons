@@ -26,7 +26,6 @@ import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.Region;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
-import org.junit.FixMethodOrder;
 
 import de.jcup.eclipse.commons.SimpleStringUtils;
 import de.jcup.eclipse.commons.WhitespaceWordEndDetector;

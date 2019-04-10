@@ -6,10 +6,11 @@ problem of too much copy & waste in de-jcup plugins. Some bigger and trick parts
 here as a simple library which can be used by plugins.
 
 ## Current version
-0.5.2 
-- Improved testcase
-- bugfix, see #15
-- documentation added in different USAGE.md files
+
+0.5.3
+- Simple completion proposal will not add a new line at end automatically any more (except overridden)
+- ReducedBrowserControl had a bug on plain text, did always set only text information
+- introduced CSS and PlainTextToHTML interfaces plus default implementations
 
 ## Howto use
 See Testcase plugin - there are all features used.
@@ -21,6 +22,11 @@ See Testcase plugin - there are all features used.
 
 
 # History:
+0.5.2 
+- Improved testcase
+- bugfix, see #15
+- documentation added in different USAGE.md files
+
 0.5.1
 - Bugfix on Template support
 

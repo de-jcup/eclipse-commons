@@ -1,6 +1,7 @@
 package de.jcup.eclipse.commons.source;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -32,10 +33,15 @@ public class SourceCodeBuilder {
 		}
 	}
 
-	public String buildCode(String indentionStringBefore, List<String> proposalLines, boolean replaceCursorTag) {
-		StringBuilder sb = new StringBuilder();
+	public String buildCode(String indentionStringBefore, List<String> proposalLines, boolean replaceCursorTag, boolean addNewLineAtEnd) {
+	    if (proposalLines==null || proposalLines.isEmpty()) {
+	        return "";
+	    }
+	    
+	    StringBuilder sb = new StringBuilder();
 		boolean mustIndent=false;
-		for (String proposalLine: proposalLines){
+		for (Iterator<String> it = proposalLines.iterator();it.hasNext();){
+		    String proposalLine = it.next();
 			if (mustIndent){
 				sb.append(indentionStringBefore);
 			}
@@ -46,7 +52,9 @@ public class SourceCodeBuilder {
 				line = proposalLine;
 			}
 			sb.append(line);
-			sb.append("\n");
+			if (it.hasNext() || addNewLineAtEnd) {
+			    sb.append("\n");
+			}
 			mustIndent=true;
 		}
 		return sb.toString();

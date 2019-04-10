@@ -49,8 +49,8 @@ public class SimpleCompletionProposal implements ICompletionProposal, ICompletio
 			String indentionStringBefore = createIndentionString(document, zeroOffset, offsetBefore);
 			try {
 				
-				String codeWithCursorTag= sourceCodeBuilder.buildCode(indentionStringBefore, template,false);
-				String codeWithoutCursorTag = sourceCodeBuilder.buildCode(indentionStringBefore, template,true);
+				String codeWithCursorTag= sourceCodeBuilder.buildCode(indentionStringBefore, template,false,isAddingNewLineAtEnd());
+				String codeWithoutCursorTag = sourceCodeBuilder.buildCode(indentionStringBefore, template,true,isAddingNewLineAtEnd());
 				
 				document.replace(zeroOffset, textBefore.length(), codeWithoutCursorTag);
 				nextSelection = sourceCodeBuilder.calculateNextSelection(zeroOffset,codeWithCursorTag);
@@ -61,8 +61,16 @@ public class SimpleCompletionProposal implements ICompletionProposal, ICompletio
 
 		}
 
+		/**
+		 * Can be overriden
+		 * @return <code>false</code> when completion shall be added as defined. if <code>true</code> a <code>\n</code> will be added to end automatically
+		 */
+		protected boolean isAddingNewLineAtEnd() {
+            return false;
+        }
 
-		protected String createIndentionString(IDocument document, int zeroOffset, int offsetBefore) {
+
+        protected String createIndentionString(IDocument document, int zeroOffset, int offsetBefore) {
 			StringBuilder indentionStringBefore = new StringBuilder();
 			while (offsetBefore>0){
 				char b;

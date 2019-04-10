@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
- package de.jcup.eclipse.commons.ui;
+package de.jcup.eclipse.commons.ui;
 
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.text.AbstractInformationControl;
@@ -31,48 +31,61 @@ import org.eclipse.swt.widgets.Slider;
 
 public class ReducedBrowserInformationControl extends AbstractInformationControl {
 
-	private static boolean browserAvailabilityChecked;
-	private static boolean swtBrowserCanBeUsed;
-	private static Point cachedScrollBarSize;
-	private String currentHTML;
-	private Browser browser;
-	private boolean initialized;
-	private BrowserInformationListener listener;
+    private static boolean browserAvailabilityChecked;
+    private static boolean swtBrowserCanBeUsed;
+    private static Point cachedScrollBarSize;
+    private String currentHTML;
+    private Browser browser;
+    private boolean initialized;
+    private BrowserInformationListener listener;
+    private PlainTextToHTMLProvider plainTextToHTMLProvider;
 
-	
-	public void setListener(BrowserInformationListener listener) {
-		this.listener = listener;
-	}
-	
-	/**
-	 * Creates an simple browser information control being resizable, providing
-	 * a toolbar and uses hyperlink listener
-	 * 
-	 * @param parentShell
-	 */
-	public ReducedBrowserInformationControl(Shell parentShell) {
-		super(parentShell, new ToolBarManager());
-		create();
-	}
+    public void setListener(BrowserInformationListener listener) {
+        this.listener = listener;
+    }
 
-	@Override
-	public void setBackgroundColor(Color background) {
-		super.setBackgroundColor(background);
-		if (isBrowserNotDisposed()) {
-			browser.setBackground(background);
-		}
-	}
+    public ReducedBrowserInformationControl(Shell parentShell) {
+        this(parentShell,null);
+    }
 
-	@Override
-	public void setForegroundColor(Color foreground) {
-		super.setForegroundColor(foreground);
-		if (isBrowserNotDisposed()) {
-			browser.setForeground(foreground);
-		}
+    /**
+     * Creates an simple browser information control being resizable, providing a
+     * toolbar and uses hyperlink listener
+     * 
+     * @param parentShell
+     * @param plainTextToHTMLProvider if <code>null</code> a provider will be automatically created, so never null
+     */
+    public ReducedBrowserInformationControl(Shell parentShell, PlainTextToHTMLProvider fallbackHTMLProvider) {
+        super(parentShell, new ToolBarManager());
+        if (fallbackHTMLProvider==null) {
+            fallbackHTMLProvider=new DefaultPlainTextToHTMLProvider(null);
+        }
+        this.plainTextToHTMLProvider = fallbackHTMLProvider;
+        create();
+    }
 
-	}
+    public PlainTextToHTMLProvider getPlainTextToHTMLProvider() {
+        return plainTextToHTMLProvider;
+    }
+    
+    @Override
+    public void setBackgroundColor(Color background) {
+        super.setBackgroundColor(background);
+        if (isBrowserNotDisposed()) {
+            browser.setBackground(background);
+        }
+    }
 
-	@Override
+    @Override
+    public void setForegroundColor(Color foreground) {
+        super.setForegroundColor(foreground);
+        if (isBrowserNotDisposed()) {
+            browser.setForeground(foreground);
+        }
+
+    }
+
+    @Override
 	public void setInformation(String information) {
 		if (isBrowserNotDisposed()) {
 			if (!initialized){
@@ -82,118 +95,113 @@ public class ReducedBrowserInformationControl extends AbstractInformationControl
 				}
 			}
 			boolean hasHtmlElementInside = information.startsWith("<html");
-			StringBuilder htmlSb = new StringBuilder();
 			if (!hasHtmlElementInside) {
-				htmlSb.append("<html><body>");
+			    currentHTML = plainTextToHTMLProvider.getHTML(information);
+			}else {
+			    currentHTML = information;
 			}
-			htmlSb.append(information);
-			if (!hasHtmlElementInside) {
-				htmlSb.append("</body></html>");
-			}
-			this.currentHTML = htmlSb.toString();
-			browser.setText(information);
+			browser.setText(currentHTML);
 		}
 	}
 
-	public void redraw() {
-		if (isBrowserNotDisposed()) {
-			browser.redraw();
-		}
-	}
+    public void redraw() {
+        if (isBrowserNotDisposed()) {
+            browser.redraw();
+        }
+    }
 
-	/**
-	 * Tells whether this control is available for given parent composite
-	 * 
-	 * @param parent
-	 *            the parent component used for checking or <code>null</code> if
-	 *            none
-	 * @return <code>true</code> if this control is available
-	 */
-	public static boolean isAvailableFor(Composite parent) {
-		if (!browserAvailabilityChecked) {
-			try {
-				Browser browser = new Browser(parent, SWT.NONE);
-				browser.dispose();
-				swtBrowserCanBeUsed = true;
+    /**
+     * Tells whether this control is available for given parent composite
+     * 
+     * @param parent the parent component used for checking or <code>null</code> if
+     *               none
+     * @return <code>true</code> if this control is available
+     */
+    public static boolean isAvailableFor(Composite parent) {
+        if (!browserAvailabilityChecked) {
+            try {
+                Browser browser = new Browser(parent, SWT.NONE);
+                browser.dispose();
+                swtBrowserCanBeUsed = true;
 
-				/* compute scrollbar size */
-				Slider sliderV = new Slider(parent, SWT.VERTICAL);
-				Slider sliderH = new Slider(parent, SWT.HORIZONTAL);
+                /* compute scrollbar size */
+                Slider sliderV = new Slider(parent, SWT.VERTICAL);
+                Slider sliderH = new Slider(parent, SWT.HORIZONTAL);
 
-				int width = sliderV.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
-				int height = sliderH.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+                int width = sliderV.computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+                int height = sliderH.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
 
-				cachedScrollBarSize = new Point(width, height);
+                cachedScrollBarSize = new Point(width, height);
 
-				sliderV.dispose();
-				sliderH.dispose();
+                sliderV.dispose();
+                sliderH.dispose();
 
-			} catch (SWTError er) {
-				swtBrowserCanBeUsed = false;
-			} finally {
-				browserAvailabilityChecked = true;
-			}
-		}
+            } catch (SWTError er) {
+                swtBrowserCanBeUsed = false;
+            } finally {
+                browserAvailabilityChecked = true;
+            }
+        }
 
-		return swtBrowserCanBeUsed;
-	}
+        return swtBrowserCanBeUsed;
+    }
 
-	@Override
-	public boolean hasContents() {
-		return currentHTML != null && currentHTML.length() > 0;
-	}
+    @Override
+    public boolean hasContents() {
+        return currentHTML != null && currentHTML.length() > 0;
+    }
 
-	int getToolbarWidth() {
-		assertAvailable();
-		return cachedScrollBarSize.x;
-	}
+    int getToolbarWidth() {
+        assertAvailable();
+        return cachedScrollBarSize.x;
+    }
 
-	int getToolbarHeight() {
-		assertAvailable();
-		return cachedScrollBarSize.x;
-	}
+    int getToolbarHeight() {
+        assertAvailable();
+        return cachedScrollBarSize.x;
+    }
 
-	@Override
-	protected void createContent(Composite parent) {
-		assertAvailable();
-		browser = new Browser(parent, SWT.FILL);
-		browser.setJavascriptEnabled(false);
+    @Override
+    protected void createContent(Composite parent) {
+        assertAvailable();
+        browser = new Browser(parent, SWT.FILL);
+        browser.setJavascriptEnabled(false);
 
-		/* disable browser menues */
-		browser.setMenu(new Menu(getShell(), SWT.NONE));
+        /* disable browser menues */
+        browser.setMenu(new Menu(getShell(), SWT.NONE));
 
-	}
+    }
 
-	@Override
-	public void dispose() {
-		super.dispose();
-		if (isBrowserNotDisposed()) {
+    @Override
+    public void dispose() {
+        super.dispose();
+        if (isBrowserNotDisposed()) {
 
-			browser.dispose();
-		}
-	}
+            browser.dispose();
+        }
+    }
 
-	private boolean isBrowserNotDisposed() {
-		return browser != null && !browser.isDisposed();
-	}
+    private boolean isBrowserNotDisposed() {
+        return browser != null && !browser.isDisposed();
+    }
 
-	private void assertAvailable() {
-		if (!browserAvailabilityChecked) {
-			throw new IllegalStateException("Availability not checked before!");
-		}
-		if (!swtBrowserCanBeUsed) {
-			throw new IllegalStateException("Availibility was checked but SWT browser cannot be used!");
-		}
-	}
+    private void assertAvailable() {
+        if (!browserAvailabilityChecked) {
+            throw new IllegalStateException("Availability not checked before!");
+        }
+        if (!swtBrowserCanBeUsed) {
+            throw new IllegalStateException("Availibility was checked but SWT browser cannot be used!");
+        }
+    }
 
-	@Override
-	public IInformationControlCreator getInformationPresenterControlCreator() {
-		return new IInformationControlCreator() {
-			@Override
-			public IInformationControl createInformationControl(Shell parent) {
-				ReducedBrowserInformationControl newControl = new ReducedBrowserInformationControl(parent);
-				return newControl;
-			}
-		};
-	}
+    @Override
+    public IInformationControlCreator getInformationPresenterControlCreator() {
+        return new IInformationControlCreator() {
+            @Override
+            public IInformationControl createInformationControl(Shell parent) {
+                ReducedBrowserInformationControl newControl = new ReducedBrowserInformationControl(parent);
+                return newControl;
+            }
+        };
+    }
 }

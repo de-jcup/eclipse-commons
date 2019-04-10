@@ -17,6 +17,7 @@ package de.jcup.eclipse.commons.codeassist;
 
 import static java.util.Collections.*;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -67,6 +68,9 @@ public class SimpleWordCodeCompletion extends AbstractWordCodeCompletition imple
 	}
 
 	Set<ProposalProvider> filter(SortedSet<ProposalProvider> allWords, String wanted) {
+	    if (allWords==null) {
+	        return Collections.emptySet();
+	    }
 		if (wanted == null || wanted.isEmpty()) {
 			return allWords;
 		}
@@ -75,16 +79,24 @@ public class SimpleWordCodeCompletion extends AbstractWordCodeCompletition imple
 		String wantedLowerCase = wanted.toLowerCase();
 
 		for (ProposalProvider info : allWords) {
-			String wordLowerCase = info.getLabel().toLowerCase();
-			if (wordLowerCase.startsWith(wantedLowerCase)) {
+		    if (info==null) {
+		        continue;
+		    }
+			String label = info.getLabel();
+			if (label==null) {
+			    continue;
+			}
+            String wordLowerCase = label.toLowerCase();
+			if (wordLowerCase.equalsIgnoreCase(wantedLowerCase)) {
+			    /* remove wanted itself */
+			    filtered.remove(info);
+			}else if (wordLowerCase.startsWith(wantedLowerCase)){ 
 				filtered.add(info);
 			} else if (wordLowerCase.indexOf(wantedLowerCase) != -1) {
 				addAfterEnd.add(info);
 			}
 		}
 		filtered.addAll(addAfterEnd);
-		/* remove wanted itself */
-		filtered.remove(wanted);
 		return filtered;
 	}
 

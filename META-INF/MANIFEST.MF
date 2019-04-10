@@ -21,3 +21,4 @@ Import-Package: org.eclipse.ui,
  org.eclipse.ui.texteditor.templates
 Bundle-ClassPath: .
 Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: testcase.de.jcup.eclipse.commons

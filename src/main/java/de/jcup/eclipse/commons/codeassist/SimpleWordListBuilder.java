@@ -28,9 +28,6 @@ import de.jcup.eclipse.commons.WordListBuilder;
  */
 public class SimpleWordListBuilder implements WordListBuilder {
 
-	/* (non-Javadoc)
-	 * @see de.jcup.asciidoctoreditor.WordListBuilder#build(java.lang.String)
-	 */
 	@Override
 	public List<String> build(String source) {
 		if (source == null  || source.isEmpty()) {
@@ -47,7 +44,7 @@ public class SimpleWordListBuilder implements WordListBuilder {
 		return list;
 	}
 
-	private String transformIfNecessary(String word) {
+	protected String transformIfNecessary(String word) {
 		if (word==null) {
 			return null;
 		}
@@ -55,7 +52,16 @@ public class SimpleWordListBuilder implements WordListBuilder {
 			return null;
 		}
 		
-		String transformed=word;
+		return transformWord(word);
+	}
+
+	/**
+	 * Default transformation, can be overriden
+	 * @param word never <code>null</code>
+	 * @return transformed, never <code>null</code>
+	 */
+    protected String transformWord(String word) {
+        String transformed=word;
 		/* start*/
 		if (transformed.startsWith("#")){
 			transformed = dropFirstChar(transformed);
@@ -75,13 +81,13 @@ public class SimpleWordListBuilder implements WordListBuilder {
 			transformed=dropLastChar(transformed);
 		}
 		return transformed;
-	}
+    }
 
-	private String dropLastChar(String transformed) {
+	protected String dropLastChar(String transformed) {
 		return transformed.substring(0,transformed.length()-1);
 	}
 
-	private String dropFirstChar(String transformed) {
+	protected String dropFirstChar(String transformed) {
 		transformed=transformed.substring(1);
 		return transformed;
 	}
