@@ -1,4 +1,5 @@
 # de-jcup-eclipse-commons
+[![Build status:](https://travis-ci.org/de-jcup/eclipse-commons.svg?branch=master)](https://travis-ci.org/de-jcup/eclipse-commons)
 *You will find the sources under https://github.com/de-jcup/eclipse-commons*
 
 A library containing reuseable eclipse solutions. This is a simple approach to resolve the
