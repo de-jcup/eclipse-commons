@@ -17,7 +17,8 @@ public class MultipleContentAssistProcessor implements IContentAssistProcessor, 
     private IContentAssistProcessor validatingAssistProcessor;
     private char[] completionProposalsAutoActivationCharacers;
     private char[] contextInformationAutoActivationCharacters;
-
+    private MultipleContentAssistSorter sorter;
+    
     public MultipleContentAssistProcessor(IContentAssistProcessor validatingAssistProcessor, IContentAssistProcessor ...others ){
         this.assistProcessors = new ArrayList<>();
         this.validatingAssistProcessor=validatingAssistProcessor;
@@ -27,6 +28,11 @@ public class MultipleContentAssistProcessor implements IContentAssistProcessor, 
         }
         completionProposalsAutoActivationCharacers= createCompletionProposalAutoActivationCharacters();
         contextInformationAutoActivationCharacters=createContextInformationAutoActivationCharacters();
+        this.sorter=createSorter();
+    }
+    
+    protected MultipleContentAssistSorter createSorter() {
+        return new DisplayStringMultipleContentAssistSorter();
     }
     
     @Override
@@ -37,6 +43,9 @@ public class MultipleContentAssistProcessor implements IContentAssistProcessor, 
             for (ICompletionProposal p: computed) {
                 list.add(p);
             }
+        }
+        if (sorter!=null) {
+            list=sorter.sortProposals(viewer,offset, list);
         }
         return list.toArray(new ICompletionProposal[list.size()]);
     }
@@ -137,7 +146,5 @@ public class MultipleContentAssistProcessor implements IContentAssistProcessor, 
         }
         return valid;
     }
-
-    
     
 }

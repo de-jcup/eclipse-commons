@@ -50,9 +50,4 @@ public interface TemplateSupportConfig {
         return false;
     }
 
-    /**
-     * Optional: Ignore case configuration. per default <code>true</code>
-     * @return <code>true</code> when template resolving ignores case in names
-     */
-    public default boolean isIgnoringCaseAtTemplateNames() {return true;}
 }

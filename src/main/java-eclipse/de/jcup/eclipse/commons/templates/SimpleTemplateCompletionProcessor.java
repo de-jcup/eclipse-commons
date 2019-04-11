@@ -24,6 +24,9 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
 import de.jcup.eclipse.commons.PluginContextProvider;
+import de.jcup.eclipse.commons.codeassist.DefaultRelevanceCalculator;
+import de.jcup.eclipse.commons.codeassist.RelevanceCalculator;
+import de.jcup.eclipse.commons.codeassist.RelevanceConstants;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 public class SimpleTemplateCompletionProcessor extends TemplateCompletionProcessor {
@@ -127,22 +130,8 @@ public class SimpleTemplateCompletionProcessor extends TemplateCompletionProcess
         if (templateName == null) {
             templateName = "";
         }
-        if (config.isIgnoringCaseAtTemplateNames()) {
-            templateName=templateName.toLowerCase();
-            prefix = prefix.toLowerCase();
-        }
-        
-        if (templateName.equals(prefix)) {
-            return RelevanceConstants.MATCHES_FULL; 
-        }
-        if (templateName.startsWith(prefix)) {
-            return RelevanceConstants.MATCHES_START; // show those which are starting with at first
-        }
-        if (templateName.contains(prefix)) {
-            return RelevanceConstants.MATCHES_NOT_AT_START_BUT_INSIDE; // show those which contains somewhere are next
-        }
-        // we return 0 - means will not be added (see caller code above)
-        return RelevanceConstants.DOES_NOT_MATCH;
+        RelevanceCalculator c = new DefaultRelevanceCalculator(prefix);
+        return c.calculate(templateName);
     }
 
     @Override
