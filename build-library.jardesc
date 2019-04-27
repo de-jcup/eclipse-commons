@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <jardesc>
     <jar path="eclipse-commons/build/de-jcup-eclipse-commons.jar"/>
-    <options buildIfNeeded="true" compress="true" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="false" storeRefactorings="false" useSourceFolders="false"/>
+    <options buildIfNeeded="true" compress="true" descriptionLocation="/eclipse-commons/build-library.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="true" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
     <manifest generateManifest="true" manifestLocation="" manifestVersion="1.0" reuseManifest="false" saveManifest="false" usesManifest="true">
@@ -11,18 +11,11 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <folder path="/eclipse-commons/src/main"/>
-        <file path="/eclipse-commons/.classpath"/>
-        <javaElement handleIdentifier="=eclipse-commons/src\/main\/resources"/>
-        <folder path="/eclipse-commons/META-INF"/>
-        <javaElement handleIdentifier="=eclipse-commons/src\/main\/java"/>
         <javaElement handleIdentifier="=eclipse-commons/src\/main\/java-eclipse"/>
-        <file path="/eclipse-commons/LICENSE"/>
-        <file path="/eclipse-commons/build.properties"/>
-        <file path="/eclipse-commons/.gitignore"/>
-        <folder path="/eclipse-commons/icons"/>
-        <file path="/eclipse-commons/.project"/>
-        <file path="/eclipse-commons/plugin.xml"/>
+        <folder path="/eclipse-commons/src/main"/>
         <file path="/eclipse-commons/README.md"/>
+        <javaElement handleIdentifier="=eclipse-commons/src\/main\/resources"/>
+        <javaElement handleIdentifier="=eclipse-commons/src\/main\/java"/>
+        <file path="/eclipse-commons/LICENSE"/>
     </selectedElements>
 </jardesc>

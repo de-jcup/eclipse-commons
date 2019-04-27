@@ -7,11 +7,8 @@ problem of too much copy & waste in de-jcup plugins. Some bigger and trick parts
 here as a simple library which can be used by plugins.
 
 ## Current version
-0.6.0 
-- refactored index calculation
-  introducing index calclator
-- adding automatically sorting of multiproposals
-  corresponding to their relevance
+0.6.1
+- added ChangeableComboFieldEditor as component
 
 ## Howto use
 See Testcase plugin - there are all features used.
@@ -23,6 +20,11 @@ See Testcase plugin - there are all features used.
 
 
 # History:
+0.6.0 
+- refactored index calculation
+  introducing index calclator
+- adding automatically sorting of multiproposals
+  corresponding to their relevance
 0.5.3
 - Simple completion proposal will not add a new line at end automatically any more (except overridden)
 - ReducedBrowserControl had a bug on plain text, did always set only text information
