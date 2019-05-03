@@ -57,8 +57,10 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
 
         event.doit = false;
 
-        EclipseUtil.safeAsyncExec(()->{
+        boolean doIndent = event.stateMask == 0;
+        boolean doOutdent = (event.stateMask & SWT.SHIFT) == SWT.SHIFT;
 
+        EclipseUtil.safeAsyncExec(()->{
                 ISelection selection = editor.getSelectionProvider().getSelection();
                 if (!(selection instanceof ITextSelection)) {
                     return;
@@ -73,8 +75,6 @@ class ReplaceTabBySpacesVerifyKeyListener implements VerifyKeyListener {
                 }
 
                 boolean isMultiline = ts.getStartLine() != -1 && ts.getEndLine() > ts.getStartLine();
-                boolean doIndent = event.stateMask == 0;
-                boolean doOutdent = (event.stateMask & SWT.SHIFT) == SWT.SHIFT;
 
                 if (!doIndent && !doOutdent) {
                     return;

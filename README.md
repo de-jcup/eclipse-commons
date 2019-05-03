@@ -9,6 +9,7 @@ here as a simple library which can be used by plugins.
 ## Current version
 0.6.1
 - added ChangeableComboFieldEditor as component
+- fixed tab problems #21 and #22
 
 ## Howto use
 See Testcase plugin - there are all features used.
