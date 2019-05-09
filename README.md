@@ -7,9 +7,8 @@ problem of too much copy & waste in de-jcup plugins. Some bigger and trick parts
 here as a simple library which can be used by plugins.
 
 ## Current version
-0.6.1
-- added ChangeableComboFieldEditor as component
-- fixed tab problems #21 and #22
+0.6.2-unreleased (means this version is not yet released, but can be used internally)
+- added SimpleStringUtils.trimRight impl
 
 ## Howto use
 See Testcase plugin - there are all features used.
@@ -21,6 +20,9 @@ See Testcase plugin - there are all features used.
 
 
 # History:
+0.6.1
+- added ChangeableComboFieldEditor as component
+- fixed tab problems #21 and #22
 0.6.0 
 - refactored index calculation
   introducing index calclator
