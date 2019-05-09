@@ -7,11 +7,19 @@ import org.junit.Test;
 public class SimpleStringUtilsTest {
 
     @Test
-    public void trim_right_hiho_multiple_ways() {
+    public void trim_right_hiho__with_or_without_whitespaces_at_end() {
         assertEquals("hiho",SimpleStringUtils.trimRight("hiho"));
         assertEquals("hiho",SimpleStringUtils.trimRight("hiho "));
         assertEquals("hiho",SimpleStringUtils.trimRight("hiho     "));
         assertEquals("hiho",SimpleStringUtils.trimRight("hiho\n    "));
+    }
+    
+    @Test
+    public void trim_right_hiho__with_or_without_whitespaces_at_left_and_right() {
+        assertEquals(" hiho",SimpleStringUtils.trimRight(" hiho"));
+        assertEquals("  hiho",SimpleStringUtils.trimRight("  hiho "));
+        assertEquals("   hiho",SimpleStringUtils.trimRight("   hiho     "));
+        assertEquals("    hiho",SimpleStringUtils.trimRight("    hiho\n    "));
     }
     
     @Test
