@@ -32,7 +32,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 
 	private TestCaseColorManager testCaseColorManager;
 
-	private TestCaseModelSupportProvider projectModelSupportProvider;
+	private TestCaseModelSupportProvider testCaseModelSupportProvider;
 
 	/**
 	 * The constructor
@@ -40,14 +40,14 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 	public TestcaseActivator() {
 		testCaseColorManager = new TestCaseColorManager();
 		taskSupportProvider = new TestcaseTaskTagsSupportProvider(this) ;
-		projectModelSupportProvider = new TestCaseModelSupportProvider(this);
+		testCaseModelSupportProvider = new TestCaseModelSupportProvider(this);
 		templateSupportProvider = new TemplateSupportProvider(new TestCaseTemplateSupportConfig(),this);
 		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
 		PluginContextProviderRegistry.register(this);
 		
 	}
-	public TestCaseModelSupportProvider getProjectModelSupportProvider() {
-		return projectModelSupportProvider;
+	public TestCaseModelSupportProvider getTestCaseModelSupportProvider() {
+		return testCaseModelSupportProvider;
 	}
 	
 	public TestCaseColorManager getTestCaseColorManager() {
@@ -62,13 +62,13 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 		super.start(context);
 		plugin = this;
 		taskSupportProvider.getTodoTaskSupport().install();
-		projectModelSupportProvider.getProjectModelBuilderSupport().install();
+		testCaseModelSupportProvider.getWorkspaceModelSupport().install();
 	}
 
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		taskSupportProvider.getTodoTaskSupport().uninstall();
-		projectModelSupportProvider.getProjectModelBuilderSupport().uninstall();
+		testCaseModelSupportProvider.getWorkspaceModelSupport().uninstall();
 		super.stop(context);
 	}
 	
@@ -103,7 +103,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 		return PLUGIN_ID;
 	}
 	public TestCaseModel getProjectModel() {
-		return getProjectModelSupportProvider().getProjectModelBuilderSupport().getModel();
+		return getTestCaseModelSupportProvider().getWorkspaceModelSupport().getModel();
 	}
 	
     public TemplateSupportProvider getTemplateSupportProvider() {

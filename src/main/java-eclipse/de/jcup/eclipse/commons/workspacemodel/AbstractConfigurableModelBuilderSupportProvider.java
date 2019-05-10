@@ -22,7 +22,7 @@ public abstract class AbstractConfigurableModelBuilderSupportProvider<M> impleme
 	    return pluginContextProvider;
 	}
 	
-	public ModelBuilderSupport<M> getProjectModelBuilderSupport() {
+	public ModelBuilderSupport<M> getWorkspaceModelSupport() {
 		return modelBuilderSupport;
 	}
 	

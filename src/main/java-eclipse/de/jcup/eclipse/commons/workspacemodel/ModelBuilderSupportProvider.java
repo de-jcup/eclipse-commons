@@ -43,7 +43,7 @@ public interface ModelBuilderSupportProvider<M> {
      * There is no need for creating the model at this position!!! It's only a check
      * for the actions which will automatically be created by commons framework.
      * 
-     * @param line
+     * @param line - will start at 1, never lower!
      * @param lineNumber
      * @param lines
      * @return <code>true</code> when a action is necessary, otherwise
