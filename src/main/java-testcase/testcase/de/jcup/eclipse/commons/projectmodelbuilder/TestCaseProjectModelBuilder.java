@@ -9,6 +9,14 @@ import de.jcup.eclipse.commons.projectmodelbuilder.ModelUpdateAction;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 import testcase.de.jcup.eclipse.commons.TestcaseActivator;
 
+/**
+ * This is an example for a project model builder. This builder collects
+ * in every file with ".testcase" file extensions the lines where wellknown
+ * keywords reside.<br><br>
+ * Inside it's just a simple map .
+ * @author albert
+ *
+ */
 public class TestCaseProjectModelBuilder extends AbstractProjectModelBuilder<TestCaseProjectModel> {
 
 	@Override
