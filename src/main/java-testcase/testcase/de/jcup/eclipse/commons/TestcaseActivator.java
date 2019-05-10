@@ -10,10 +10,10 @@ import de.jcup.eclipse.commons.resource.EclipseResourceInputStreamProvider;
 import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvider;
 import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
 import de.jcup.eclipse.commons.ui.PluginContextProviderRegistry;
-import testcase.de.jcup.eclipse.commons.projectmodelbuilder.TestCaseProjectModel;
-import testcase.de.jcup.eclipse.commons.projectmodelbuilder.TestCaseProjectModelBuilderSupportProvider;
 import testcase.de.jcup.eclipse.commons.tasktags.TestcaseTaskTagsSupportProvider;
 import testcase.de.jcup.eclipse.commons.template.TestCaseTemplateSupportConfig;
+import testcase.de.jcup.eclipse.commons.workspacemodel.TestCaseModel;
+import testcase.de.jcup.eclipse.commons.workspacemodel.TestCaseModelBuilderSupportProvider;
 
 /**
  * The activator class controls the plug-in life cycle.
@@ -32,7 +32,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 
 	private TestCaseColorManager testCaseColorManager;
 
-	private TestCaseProjectModelBuilderSupportProvider projectModelSupportProvider;
+	private TestCaseModelBuilderSupportProvider projectModelSupportProvider;
 
 	/**
 	 * The constructor
@@ -40,13 +40,13 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 	public TestcaseActivator() {
 		testCaseColorManager = new TestCaseColorManager();
 		taskSupportProvider = new TestcaseTaskTagsSupportProvider(this) ;
-		projectModelSupportProvider = new TestCaseProjectModelBuilderSupportProvider(this);
+		projectModelSupportProvider = new TestCaseModelBuilderSupportProvider(this);
 		templateSupportProvider = new TemplateSupportProvider(new TestCaseTemplateSupportConfig(),this);
 		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
 		PluginContextProviderRegistry.register(this);
 		
 	}
-	public TestCaseProjectModelBuilderSupportProvider getProjectModelSupportProvider() {
+	public TestCaseModelBuilderSupportProvider getProjectModelSupportProvider() {
 		return projectModelSupportProvider;
 	}
 	
@@ -102,7 +102,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 	public String getPluginID() {
 		return PLUGIN_ID;
 	}
-	public TestCaseProjectModel getProjectModel() {
+	public TestCaseModel getProjectModel() {
 		return getProjectModelSupportProvider().getProjectModelBuilderSupport().getModel();
 	}
 	

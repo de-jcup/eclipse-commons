@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.part.ViewPart;
 
-import testcase.de.jcup.eclipse.commons.projectmodelbuilder.TestCaseProjectModel;
+import testcase.de.jcup.eclipse.commons.workspacemodel.TestCaseModel;
 
 public class TestcaseView extends ViewPart {
 
@@ -75,7 +75,7 @@ public class TestcaseView extends ViewPart {
 			if (element instanceof IResource) {
 				return ((IResource) element).getName();
 			}
-			if (element instanceof TestCaseProjectModel) {
+			if (element instanceof TestCaseModel) {
 				return "Model";
 			}
 			return super.getText(element);
@@ -86,8 +86,8 @@ public class TestcaseView extends ViewPart {
 
 		@Override
 		public Object[] getElements(Object inputElement) {
-			if (inputElement instanceof TestCaseProjectModel) {
-				TestCaseProjectModel model = (TestCaseProjectModel) inputElement;
+			if (inputElement instanceof TestCaseModel) {
+				TestCaseModel model = (TestCaseModel) inputElement;
 				return new Object[] {model.getMap()};
 			}
 			return new Object[] {};
@@ -100,7 +100,7 @@ public class TestcaseView extends ViewPart {
 			}
 			if (parentElement instanceof IResource) {
 				IResource key = (IResource) parentElement;
-				TestCaseProjectModel model = TestcaseActivator.getDefault().getProjectModel();
+				TestCaseModel model = TestcaseActivator.getDefault().getProjectModel();
 				String data = model.getMap().get(key).toString();
 				return new Object[] { data };
 			}

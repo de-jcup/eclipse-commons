@@ -1,6 +1,6 @@
-package de.jcup.eclipse.commons.projectmodelbuilder;
+package de.jcup.eclipse.commons.workspacemodel;
 
-public abstract class AbstractProjectModelBuilder<M> implements ProjectModelBuilder<M>{
+public abstract class AbstractModelBuilder<M> implements ModelBuilder<M>{
 
 	@Override
 	public final void update(M model, ModelUpdateAction action) {

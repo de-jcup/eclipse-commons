@@ -1,17 +1,17 @@
-package testcase.de.jcup.eclipse.commons.projectmodelbuilder;
+package testcase.de.jcup.eclipse.commons.workspacemodel;
 
 import org.eclipse.core.resources.IFile;
 
 import de.jcup.eclipse.commons.PluginContextProvider;
-import de.jcup.eclipse.commons.projectmodelbuilder.AbstractConfigurableProjectModelBuilderSupportProvider;
-import de.jcup.eclipse.commons.projectmodelbuilder.ProjectModelBuilder;
+import de.jcup.eclipse.commons.workspacemodel.AbstractConfigurableModelBuilderSupportProvider;
+import de.jcup.eclipse.commons.workspacemodel.ModelBuilder;
 import testcase.de.jcup.eclipse.commons.keywords.TestCaseKeyword;
 import testcase.de.jcup.eclipse.commons.keywords.TestCaseKeywords;
 
-public class TestCaseProjectModelBuilderSupportProvider extends AbstractConfigurableProjectModelBuilderSupportProvider<TestCaseProjectModel>{
+public class TestCaseModelBuilderSupportProvider extends AbstractConfigurableModelBuilderSupportProvider<TestCaseModel>{
 
 
-	public TestCaseProjectModelBuilderSupportProvider(PluginContextProvider provider) {
+	public TestCaseModelBuilderSupportProvider(PluginContextProvider provider) {
 		super(provider);
 	}
 
@@ -44,8 +44,8 @@ public class TestCaseProjectModelBuilderSupportProvider extends AbstractConfigur
 	}
 
 	@Override
-	public ProjectModelBuilder<TestCaseProjectModel> createBuilder() {
-		return new TestCaseProjectModelBuilder();
+	public ModelBuilder<TestCaseModel> createBuilder() {
+		return new TestCaseModelBuilder();
 	}
 
 	@Override

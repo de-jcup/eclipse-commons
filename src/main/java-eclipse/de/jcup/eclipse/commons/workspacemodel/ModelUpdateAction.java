@@ -1,4 +1,4 @@
-package de.jcup.eclipse.commons.projectmodelbuilder;
+package de.jcup.eclipse.commons.workspacemodel;
 
 import org.eclipse.core.resources.IResource;
 

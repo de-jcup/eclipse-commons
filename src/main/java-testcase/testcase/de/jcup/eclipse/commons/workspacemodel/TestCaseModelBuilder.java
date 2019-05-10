@@ -1,12 +1,12 @@
-package testcase.de.jcup.eclipse.commons.projectmodelbuilder;
+package testcase.de.jcup.eclipse.commons.workspacemodel;
 
 import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 
-import de.jcup.eclipse.commons.projectmodelbuilder.AbstractProjectModelBuilder;
-import de.jcup.eclipse.commons.projectmodelbuilder.ModelUpdateAction;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
+import de.jcup.eclipse.commons.workspacemodel.AbstractModelBuilder;
+import de.jcup.eclipse.commons.workspacemodel.ModelUpdateAction;
 import testcase.de.jcup.eclipse.commons.TestcaseActivator;
 
 /**
@@ -17,15 +17,15 @@ import testcase.de.jcup.eclipse.commons.TestcaseActivator;
  * @author albert
  *
  */
-public class TestCaseProjectModelBuilder extends AbstractProjectModelBuilder<TestCaseProjectModel> {
+public class TestCaseModelBuilder extends AbstractModelBuilder<TestCaseModel> {
 
 	@Override
-	public TestCaseProjectModel create() {
-		return new TestCaseProjectModel();
+	public TestCaseModel create() {
+		return new TestCaseModel();
 	}
 
 	@Override
-	public void updateImpl(TestCaseProjectModel model, ModelUpdateAction action) {
+	public void updateImpl(TestCaseModel model, ModelUpdateAction action) {
 		IResource resource = action.getResource();
 		switch (action.getType()) {
 		case ADD:

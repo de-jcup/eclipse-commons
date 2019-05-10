@@ -1,11 +1,11 @@
-package testcase.de.jcup.eclipse.commons.projectmodelbuilder;
+package testcase.de.jcup.eclipse.commons.workspacemodel;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.eclipse.core.resources.IResource;
 
-public class TestCaseProjectModel {
+public class TestCaseModel {
 
 	
 	private Map<IResource, StringBuilder> map = new HashMap<>();

@@ -13,7 +13,7 @@
  * and limitations under the License.
  *
  */
-package de.jcup.eclipse.commons.projectmodelbuilder;
+package de.jcup.eclipse.commons.workspacemodel;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -46,13 +46,13 @@ import de.jcup.eclipse.commons.ui.EclipseUtil;
  * @version 0.1
  *
  */
-public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
+public class ModelBuilderSupport<M> implements IResourceChangeListener {
 
-	private ProjectModelBuilderSupportProvider<M> provider;
+	private ModelBuilderSupportProvider<M> provider;
 	private M model;
-	private ProjectModelBuilder<M> builder;
+	private ModelBuilder<M> builder;
 
-	public ProjectModelBuilderSupport(ProjectModelBuilderSupportProvider<M> provider) {
+	public ModelBuilderSupport(ModelBuilderSupportProvider<M> provider) {
 		if (provider == null) {
 			throw new IllegalArgumentException("provider may not be null");
 		}
@@ -214,7 +214,7 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 					try {
 						removeFromModel(resourceToClean);
 					} catch (CoreException e) {
-						return new Status(IStatus.ERROR, ProjectModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
+						return new Status(IStatus.ERROR, ModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
 								"Failed to create task markers", e);
 					}
 					monitor.worked(worked++);
@@ -223,7 +223,7 @@ public class ProjectModelBuilderSupport<M> implements IResourceChangeListener {
 					try {
 						addToModel(action);
 					} catch (CoreException e) {
-						return new Status(IStatus.ERROR, ProjectModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
+						return new Status(IStatus.ERROR, ModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
 								"Failed to create task markers", e);
 					}
 					monitor.worked(worked++);

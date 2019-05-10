@@ -1,6 +1,6 @@
-package de.jcup.eclipse.commons.projectmodelbuilder;
+package de.jcup.eclipse.commons.workspacemodel;
 
-public interface ProjectModelBuilder<M> {
+public interface ModelBuilder<M> {
 
     /**
      * Creates a new project model
