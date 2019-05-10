@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
@@ -51,6 +52,8 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
 	private ModelBuilderSupportProvider<M> provider;
 	private M model;
 	private ModelBuilder<M> builder;
+	
+	private ReentrantLock oneTimeBuildOnlyLock = new ReentrantLock();
 
 	public ModelBuilderSupport(ModelBuilderSupportProvider<M> provider) {
 		if (provider == null) {
@@ -81,10 +84,10 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
 		if (workspace == null) {
 			return;
 		}
-		/* with resource change listener we get all changes on file */
-		workspace.addResourceChangeListener(this);
 		/* scan inside workspace for resources on startup */
 		noResourceChangedScan(true);
+		/* with resource change listener we get all changes on file */
+		workspace.addResourceChangeListener(this);
 
 	}
 
@@ -201,33 +204,39 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
 		if (totalTasks == 0) {
 			return;
 		}
+		
 		Job job = new Job("Rebuild model of type" + provider.getModelName()) {
 
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
+			    oneTimeBuildOnlyLock.lock();
+			    try {
+			        int totalTasks = actions.size() + resourcesToClean.size();
 
-				int totalTasks = actions.size() + resourcesToClean.size();
-
-				int worked = 0;
-				monitor.beginTask("Updating model", totalTasks);
-				for (IResource resourceToClean : resourcesToClean) {
-					try {
-						removeFromModel(resourceToClean);
-					} catch (CoreException e) {
-						return new Status(IStatus.ERROR, ModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
-								"Failed to create task markers", e);
-					}
-					monitor.worked(worked++);
-				}
-				for (CreateModelEntryAction action : actions) {
-					try {
-						addToModel(action);
-					} catch (CoreException e) {
-						return new Status(IStatus.ERROR, ModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
-								"Failed to create task markers", e);
-					}
-					monitor.worked(worked++);
-				}
+	                int worked = 0;
+	                monitor.beginTask("Updating model", totalTasks);
+	                for (IResource resourceToClean : resourcesToClean) {
+	                    try {
+	                        removeFromModel(resourceToClean);
+	                    } catch (CoreException e) {
+	                        return new Status(IStatus.ERROR, ModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
+	                                "Failed to remove from model:"+resourceToClean, e);
+	                    }
+	                    monitor.worked(worked++);
+	                }
+	                for (CreateModelEntryAction action : actions) {
+	                    try {
+	                        addToModel(action);
+	                    } catch (CoreException e) {
+	                        return new Status(IStatus.ERROR, ModelBuilderSupport.this.provider.getPluginContextProvider().getPluginID(),
+	                                "Failed to add to model:"+action.getResource(), e);
+	                    }
+	                    monitor.worked(worked++);
+	                }    
+			    }finally {
+			        oneTimeBuildOnlyLock.unlock();
+			    }
+				
 				return Status.OK_STATUS;
 			}
 		};
@@ -305,10 +314,14 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
 			handleResource(context, resource);
 			return;
 		}
-		if (resource instanceof IProject) {
-		    /* project has either be closed or is opened*/
-		    System.err.println("delta project!");
-		}
+//		if (resource instanceof IProject) {
+//		    /* project has either be closed or is opened*/
+//		    IProject project = (IProject) resource;
+//		    if (project.isOpen()) {
+//		        
+//		    }
+//		}
+		/* go recursive into */
 		for (IResourceDelta childDelta : delta.getAffectedChildren()) {
 			handleDelta(context, childDelta);
 		}
