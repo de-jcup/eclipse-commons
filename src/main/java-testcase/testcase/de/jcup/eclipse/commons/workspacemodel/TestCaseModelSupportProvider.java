@@ -8,10 +8,10 @@ import de.jcup.eclipse.commons.workspacemodel.ModelBuilder;
 import testcase.de.jcup.eclipse.commons.keywords.TestCaseKeyword;
 import testcase.de.jcup.eclipse.commons.keywords.TestCaseKeywords;
 
-public class TestCaseModelBuilderSupportProvider extends AbstractConfigurableModelBuilderSupportProvider<TestCaseModel>{
+public class TestCaseModelSupportProvider extends AbstractConfigurableModelBuilderSupportProvider<TestCaseModel>{
 
 
-	public TestCaseModelBuilderSupportProvider(PluginContextProvider provider) {
+	public TestCaseModelSupportProvider(PluginContextProvider provider) {
 		super(provider);
 	}
 

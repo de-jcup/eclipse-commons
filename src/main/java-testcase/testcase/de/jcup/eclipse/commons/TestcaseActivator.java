@@ -13,7 +13,7 @@ import de.jcup.eclipse.commons.ui.PluginContextProviderRegistry;
 import testcase.de.jcup.eclipse.commons.tasktags.TestcaseTaskTagsSupportProvider;
 import testcase.de.jcup.eclipse.commons.template.TestCaseTemplateSupportConfig;
 import testcase.de.jcup.eclipse.commons.workspacemodel.TestCaseModel;
-import testcase.de.jcup.eclipse.commons.workspacemodel.TestCaseModelBuilderSupportProvider;
+import testcase.de.jcup.eclipse.commons.workspacemodel.TestCaseModelSupportProvider;
 
 /**
  * The activator class controls the plug-in life cycle.
@@ -32,7 +32,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 
 	private TestCaseColorManager testCaseColorManager;
 
-	private TestCaseModelBuilderSupportProvider projectModelSupportProvider;
+	private TestCaseModelSupportProvider projectModelSupportProvider;
 
 	/**
 	 * The constructor
@@ -40,13 +40,13 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 	public TestcaseActivator() {
 		testCaseColorManager = new TestCaseColorManager();
 		taskSupportProvider = new TestcaseTaskTagsSupportProvider(this) ;
-		projectModelSupportProvider = new TestCaseModelBuilderSupportProvider(this);
+		projectModelSupportProvider = new TestCaseModelSupportProvider(this);
 		templateSupportProvider = new TemplateSupportProvider(new TestCaseTemplateSupportConfig(),this);
 		TooltipTextSupport.setTooltipInputStreamProvider(new EclipseResourceInputStreamProvider(PLUGIN_ID));
 		PluginContextProviderRegistry.register(this);
 		
 	}
-	public TestCaseModelBuilderSupportProvider getProjectModelSupportProvider() {
+	public TestCaseModelSupportProvider getProjectModelSupportProvider() {
 		return projectModelSupportProvider;
 	}
 	
