@@ -314,13 +314,6 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
 			handleResource(context, resource);
 			return;
 		}
-//		if (resource instanceof IProject) {
-//		    /* project has either be closed or is opened*/
-//		    IProject project = (IProject) resource;
-//		    if (project.isOpen()) {
-//		        
-//		    }
-//		}
 		/* go recursive into */
 		for (IResourceDelta childDelta : delta.getAffectedChildren()) {
 			handleDelta(context, childDelta);
