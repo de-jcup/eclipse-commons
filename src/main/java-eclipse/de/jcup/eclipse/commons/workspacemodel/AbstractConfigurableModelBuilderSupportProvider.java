@@ -27,6 +27,6 @@ public abstract class AbstractConfigurableModelBuilderSupportProvider<M> impleme
 	}
 	
 	@Override
-	public abstract boolean isProjectModelBuilderSupportEnabled();
+	public abstract boolean isModelBuilderSupportEnabled();
 
 }

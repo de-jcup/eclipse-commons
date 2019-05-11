@@ -49,7 +49,7 @@ public class TestCaseModelSupportProvider extends AbstractConfigurableModelBuild
 	}
 
 	@Override
-	public boolean isProjectModelBuilderSupportEnabled() {
+	public boolean isModelBuilderSupportEnabled() {
 		return true;
 	}
 

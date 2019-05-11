@@ -27,7 +27,7 @@ public interface ModelBuilderSupportProvider<M> {
      * 
      * @return <code>true</code> when support is enabled
      */
-    boolean isProjectModelBuilderSupportEnabled();
+    boolean isModelBuilderSupportEnabled();
 
     /**
      * Model build is done as a job. To provide information about progress the job

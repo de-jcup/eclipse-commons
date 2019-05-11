@@ -7,10 +7,12 @@ problem of too much copy & waste in de-jcup plugins. Some bigger and trick parts
 here as a simple library which can be used by plugins.
 
 ## Current version
-0.7.0-unreleased (means this version is not yet released, but can be used internally)
+0.7.0
 - added SimpleStringUtils.trimRight impl
 - multiple changes for workspace model
 - resource helper can now open editor
+- workspace model support final
+- added some ui parts for preferences + UIMasterSlaveSupport
 
 ## Howto use
 See Testcase plugin - there are all features used.
