@@ -52,7 +52,12 @@ public interface ModelBuilderSupportProvider<M> {
     public boolean isLineCheckforModelNessary(String line, int lineNumber, String[] lines);
     
     /**
-     * @return the amount of lines which will be checked, or <code>-1</code> when all lines shall be read
+     * Gives back the maximum amount of lines which will be checked, or <code>-1</code> when all lines shall be read.
+     * Per default -1 is returned, means all lines are read and given to {@link #isLineCheckforModelNessary(String, int, String[])}.
+     * <br><br>
+     * If you do not need all lines but only for example the first one override the method and return your wanted maximum value - in the example
+     * mentioned before we would give back just a 1..
+     * @return amount of lines to read or <code>-1</code> when all lines shall be read
      */
     public default int getAmountOfLinesToCheck() {
         return -1;

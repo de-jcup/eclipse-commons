@@ -24,7 +24,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
@@ -40,11 +39,11 @@ import org.eclipse.core.runtime.jobs.Job;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 /**
- * A full standalone project model build solution which can be copied into a
- * plugin and works...<br>
+ * A full standalone workspace model builder solution which can be copied into a
+ * plugin and works...<br>. Just create the an instance and call install on it.
  * 
  * @author Albert Tregnaghi
- * @version 0.1
+ * @version 1.0
  *
  */
 public class ModelBuilderSupport<M> implements IResourceChangeListener {
@@ -55,6 +54,10 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
 
     private ReentrantLock oneTimeBuildOnlyLock = new ReentrantLock();
 
+    /**
+     * Create support instance for given provider
+     * @param provider may not be <code>null</code>
+     */
     public ModelBuilderSupport(ModelBuilderSupportProvider<M> provider) {
         if (provider == null) {
             throw new IllegalArgumentException("provider may not be null");
@@ -299,7 +302,7 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
                 linesRead++;
                 list.add(line);
                 if (linesRead==amountOfLinesToCheck) {
-                    /* -1 is all and so never reached. 1 is reached on first read...*/
+                    /* -1 is all and so never reached. 1 is reached on first read... B and so on..*/
                     break;
                 }
             }

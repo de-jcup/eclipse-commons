@@ -7,12 +7,8 @@ problem of too much copy & waste in de-jcup plugins. Some bigger and trick parts
 here as a simple library which can be used by plugins.
 
 ## Current version
-0.7.0
-- added SimpleStringUtils.trimRight impl
-- multiple changes for workspace model
-- resource helper can now open editor
-- workspace model support final
-- added some ui parts for preferences + UIMasterSlaveSupport
+0.7.1
+- speedup workspace model build (possibility) #158
 
 ## Howto use
 See Testcase plugin - there are all features used.
@@ -24,6 +20,12 @@ See Testcase plugin - there are all features used.
 
 
 # History:
+0.7.0
+- added SimpleStringUtils.trimRight impl
+- multiple changes for workspace model
+- resource helper can now open editor
+- workspace model support final
+- added some ui parts for preferences + UIMasterSlaveSupport
 0.6.1
 - added ChangeableComboFieldEditor as component
 - fixed tab problems #21 and #22
