@@ -288,14 +288,25 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
         if (!file.isSynchronized(IResource.DEPTH_ZERO)) {
             return;
         }
+        
+        int amountOfLinesToCheck = provider.getAmountOfLinesToCheck();
+        
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents(), "UTF-8"))) {
             String line = null;
+            int linesRead=0;
             List<String> list = new ArrayList<>();
             while ((line = br.readLine()) != null) {
+                linesRead++;
                 list.add(line);
+                if (linesRead==amountOfLinesToCheck) {
+                    /* -1 is all and so never reached. 1 is reached on first read...*/
+                    break;
+                }
             }
             String[] lines = list.toArray(new String[list.size()]);
+            
             visitLines(context, lines, file);
+            
         } catch (RuntimeException | IOException e) {
             throw new CoreException(new Status(Status.ERROR, provider.getPluginContextProvider().getPluginID(), "Not able to visit resource", e));
         }

@@ -50,6 +50,13 @@ public interface ModelBuilderSupportProvider<M> {
      *         <code>false</code>
      */
     public boolean isLineCheckforModelNessary(String line, int lineNumber, String[] lines);
+    
+    /**
+     * @return the amount of lines which will be checked, or <code>-1</code> when all lines shall be read
+     */
+    public default int getAmountOfLinesToCheck() {
+        return -1;
+    }
 
     /**
      * Creates the project model builder
