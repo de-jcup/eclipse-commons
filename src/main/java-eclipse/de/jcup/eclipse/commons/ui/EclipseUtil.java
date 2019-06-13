@@ -96,6 +96,9 @@ public class EclipseUtil {
 
     public static IEditorPart getActiveEditor() {
         IWorkbenchPage page = getActivePage();
+        if (page==null) {
+            return null;
+        }
         IEditorPart activeEditor = page.getActiveEditor();
         return activeEditor;
     }
