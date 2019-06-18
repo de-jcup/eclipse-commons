@@ -58,9 +58,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.FileEditorInput;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.Bundle;
-
-import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 public class EclipseResourceHelper {
     public static final EclipseResourceHelper DEFAULT = new EclipseResourceHelper();
@@ -209,16 +208,6 @@ public class EclipseResourceHelper {
         return stateLocation.toFile();
     }
 
-    public File getFileInPlugin(PluginContextProvider contextProvider, IPath path) throws CoreException {
-        try {
-            URL installURL = contextProvider.getActivator().getBundle().getEntry(path.toString());
-            URL localURL = FileLocator.toFileURL(installURL);
-            return new File(localURL.getFile());
-        } catch (IOException e) {
-            throw new CoreException(new Status(IStatus.ERROR, contextProvider.getPluginID(), "Cannot get file in plugin from path:" + path, e));
-        }
-    }
-
     /**
      * Returns the file or <code>null</code>
      * 
@@ -244,8 +233,64 @@ public class EclipseResourceHelper {
         return toFile(resource.getLocation());
     }
 
+    public File getFileInPlugin(PluginContextProvider contextProvider, IPath path) throws CoreException {
+        if (path==null) {
+            throw new CoreException(new Status(IStatus.ERROR, contextProvider.getPluginID(), "Path may not be null to get file in plugin:" + path));
+        }
+        try {
+            AbstractUIPlugin activator = contextProvider.getActivator();
+            Bundle bundle = activator.getBundle();
+            URL installURL = bundle.getEntry(path.toString());
+            if (installURL==null) {
+                throw new CoreException(new Status(IStatus.ERROR, contextProvider.getPluginID(), "Install url may not be null for path:" + path));
+            }
+            URL localURL = FileLocator.toFileURL(installURL);
+            return new File(localURL.getFile());
+        } catch (IOException e) {
+            throw new CoreException(new Status(IStatus.ERROR, contextProvider.getPluginID(), "Cannot get file in plugin from path:" + path, e));
+        }
+    }
+
     public File getFileInPlugin(String path, PluginContextProvider plugin) throws IOException {
         return getFileInPlugin(path, plugin.getPluginID());
+    }
+
+    public File getFileInPlugin(String path, String pluginId) throws IOException {
+        if (path == null) {
+            throw new IOException("Cannot get file for path not set!");
+        }
+        Bundle bundle = Platform.getBundle(pluginId);
+        if (bundle == null) {
+            throw new IOException("Bundle not found:"+pluginId);
+        }
+        URL url = bundle.getEntry(path);
+        if (url == null) {
+            /* PDE workaround */
+            String path2 = "bin/" + path;
+            url = bundle.getEntry(path2);
+            if (url == null) {
+                throw new IOException("Cannot find file at path:" + path);
+            }
+    
+        }
+        URL resolvedFileURL = FileLocator.toFileURL(url);
+        if (resolvedFileURL == null) {
+            throw new FileNotFoundException("Cannot convert URL to file:" + resolvedFileURL);
+        }
+    
+        // We need to use the 3-arg constructor of URI in order to properly
+        // escape file system chars
+        URI resolvedURI;
+        try {
+            resolvedURI = new URI(resolvedFileURL.getProtocol(), resolvedFileURL.getPath(), null);
+            File file = new File(resolvedURI);
+            if (!file.exists()) {
+                throw new FileNotFoundException("Cannot convert URL to file:" + resolvedFileURL);
+            }
+            return file;
+        } catch (URISyntaxException e) {
+            throw new IOException("Cannot find file at resolvedFileURL:" + resolvedFileURL, e);
+        }
     }
 
     /**
@@ -275,38 +320,6 @@ public class EclipseResourceHelper {
             editorFile = fsInput.getAdapter(File.class);
         }
         return editorFile;
-    }
-
-    public File getFileInPlugin(String path, String pluginId) throws IOException {
-        Bundle bundle = Platform.getBundle(pluginId);
-        URL url = bundle.getEntry(path);
-        if (url == null) {
-            /* PDE workaround */
-            String path2 = "bin/" + path;
-            url = bundle.getEntry(path2);
-            if (url == null) {
-                return null;
-            }
-
-        }
-        URL resolvedFileURL = FileLocator.toFileURL(url);
-        if (resolvedFileURL == null) {
-            throw new FileNotFoundException("Cannot convert URL to file:" + resolvedFileURL);
-        }
-
-        // We need to use the 3-arg constructor of URI in order to properly
-        // escape file system chars
-        URI resolvedURI;
-        try {
-            resolvedURI = new URI(resolvedFileURL.getProtocol(), resolvedFileURL.getPath(), null);
-            File file = new File(resolvedURI);
-            if (!file.exists()) {
-                throw new FileNotFoundException("Cannot convert URL to file:" + resolvedFileURL);
-            }
-            return file;
-        } catch (URISyntaxException e) {
-            throw new IOException("Cannot find file at resolvedFileURL:" + resolvedFileURL, e);
-        }
     }
 
     public IFile toIFile(File file) {
