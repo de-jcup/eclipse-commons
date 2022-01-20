@@ -5,7 +5,8 @@ name: Java CI with Maven
 on: 
   push:
     branches-ignore:
-     - documentation
+     - documenta  tion
+  pull_request:  
 
 jobs:
   build:
