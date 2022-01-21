@@ -1,0 +1,68 @@
+# This workflow will release to maven central with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: Java Release with Maven
+on:
+  workflow_dispatch:
+    inputs:
+      milestone-number:
+        description: Milestone number for release(s)
+        required: true
+
+jobs:
+  relese:
+    name: Create release and publish to maven central
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+         ref: master
+    - name: Set up JDK 8
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'adopt'
+        java-version: '8'
+    - name: Set Release version env variable
+      run: |
+        echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
+
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+
+    - name: Set up Apache Maven Central
+      uses: actions/setup-java@v1
+      with: # running setup-java again overwrites the settings.xml
+        java-version: 1.8
+        server-id: maven # Value of the distributionManagement/repository/id field of the pom.xml
+        server-username: ${{ secrets.MAVEN_USERNAME }} # env variable for username in deploy
+        server-password: ${{ secrets.MAVEN_CENTRAL_TOKEN }} # env variable for token in deploy
+        gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }} # Value of the GPG private key to import
+        gpg-passphrase: ${{ secrets.MAVEN_GPG_PASSPHRASE }} # env variable for GPG private key passphrase
+
+    - name: Publish to Apache Maven Central
+      run: mvn deploy
+      env:
+        MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+        MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}  
+      
+    - name: "Create release"
+      id: "create_release"
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      with:
+          tag_name: ${{ env.RELEASE_VERSION }}
+          commitish: master
+          release_name: Version ${{ env.RELEASE_VERSION }}
+          body: |
+            Changes in this version
+            - Some minor changes and bugfixes
+            
+            For more details please look at [Milestone ${{github.event.inputs.milestone-number}}]( https://github.com/de-jcup/eclipse-commons/milestone/${{github.event.inputs.milestone-number}}?closed=1)
+            
+            Artifact can be found at https://mvnrepository.com/artifact/de.jcup.eclipse.commons/eclipse-commons/${{ env.RELEASE_VERSION }}
+          draft: true
+          prerelease: false
+    

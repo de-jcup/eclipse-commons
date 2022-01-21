@@ -1,87 +1,132 @@
 <project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>de.jcup.eclipse</groupId>
-  <artifactId>de.jcup.eclipse.commons</artifactId>
-  <version>1.0.0</version>
-  <packaging>eclipse-plugin</packaging>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>de.jcup.eclipse</groupId>
+	<artifactId>de.jcup.eclipse.commons</artifactId>
+	<version>1.0.0</version>
+	<packaging>eclipse-plugin</packaging>
 
-   <repositories>
-    <repository>
-      <id>eclipse-latest</id>
-      <url>http://download.eclipse.org/releases/latest</url>
-      <layout>p2</layout>
-    </repository>
-  </repositories>
-
-
-  <properties>
-    <tycho.version>2.5.0</tycho.version>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+	<repositories>
+		<repository>
+			<id>eclipse-latest</id>
+			<url>http://download.eclipse.org/releases/latest</url>
+			<layout>p2</layout>
+		</repository>
+	</repositories>
 
 
-  <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <groupId>org.eclipse.tycho</groupId>
-          <artifactId>tycho-p2-director-plugin</artifactId>
-          <version>${tycho.version}</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-
-    <plugins>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-maven-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <extensions>true</extensions>
-      </plugin>
-      <!--Enable the replacement of the SNAPSHOT version in the final product configuration-->
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>tycho-packaging-plugin</artifactId>
-        <version>${tycho.version}</version>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <id>package-feature</id>
-            <configuration>
-              <finalName>${project.artifactId}_${unqualifiedVersion}.${buildQualifier}</finalName>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.eclipse.tycho</groupId>
-        <artifactId>target-platform-configuration</artifactId>
-        <version>${tycho.version}</version>
-        <configuration>
-          <resolveWithExecutionEnvironmentConstraints>false</resolveWithExecutionEnvironmentConstraints>
-
-          <environments>
-            <environment>
-              <os>linux</os>
-              <ws>gtk</ws>
-              <arch>x86_64</arch>
-            </environment>
-            <environment>
-              <os>win32</os>
-              <ws>win32</ws>
-              <arch>x86_64</arch>
-            </environment>
-            <environment>
-              <os>macosx</os>
-              <ws>cocoa</ws>
-              <arch>x86_64</arch>
-            </environment>
-          </environments>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<properties>
+		<tycho.version>2.5.0</tycho.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-p2-director-plugin</artifactId>
+					<version>${tycho.version}</version>
+				</plugin>
+
+				<!--
+				 maven central deployment implemented as described at https://bjansen.github.io/java/2021/02/03/deploying-to-maven-central-using-github-actions.html 
+				-->
+				<plugin>
+					<groupId>org.sonatype.plugins</groupId>
+					<artifactId>nexus-staging-maven-plugin</artifactId>
+					<version>1.6.8</version>
+					<extensions>true</extensions>
+					<configuration>
+						<serverId>ossrh</serverId>
+						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						<autoReleaseAfterClose>true</autoReleaseAfterClose>
+					</configuration>
+				</plugin>
+
+			</plugins>
+		</pluginManagement>
+
+		<plugins>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<!--Enable the replacement of the SNAPSHOT version in the final product configuration-->
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-packaging-plugin</artifactId>
+				<version>${tycho.version}</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<id>package-feature</id>
+						<configuration>
+							<finalName>${project.artifactId}_${unqualifiedVersion}.${buildQualifier}</finalName>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>target-platform-configuration</artifactId>
+				<version>${tycho.version}</version>
+				<configuration>
+					<resolveWithExecutionEnvironmentConstraints>false</resolveWithExecutionEnvironmentConstraints>
+
+					<environments>
+						<environment>
+							<os>linux</os>
+							<ws>gtk</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>win32</os>
+							<ws>win32</ws>
+							<arch>x86_64</arch>
+						</environment>
+						<environment>
+							<os>macosx</os>
+							<ws>cocoa</ws>
+							<arch>x86_64</arch>
+						</environment>
+					</environments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<configuration>
+							<!-- Prevent gpg from using pinentry programs -->
+							<gpgArguments>
+								<arg>--pinentry-mode</arg>
+								<arg>loopback</arg>
+							</gpgArguments>
+						</configuration>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 </project>
