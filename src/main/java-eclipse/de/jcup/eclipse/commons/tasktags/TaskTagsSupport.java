@@ -16,7 +16,6 @@
 package de.jcup.eclipse.commons.tasktags;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -293,7 +292,7 @@ public class TaskTagsSupport implements IResourceChangeListener {
 		if (lineNumber <= 0)
 			lineNumber = 1;
 		HashMap<String, Object> map = new HashMap<>();
-		map.put(IMarker.PRIORITY, new Integer(priority));
+		map.put(IMarker.PRIORITY, Integer.valueOf(priority));
 		map.put(IMarker.LOCATION, resource.getFullPath().toOSString());
 		map.put(IMarker.MESSAGE, message);
 		MarkerUtilities.setLineNumber(map, lineNumber);
@@ -348,7 +347,7 @@ public class TaskTagsSupport implements IResourceChangeListener {
 			}
 			String[] lines = list.toArray(new String[list.size()]);
 			visitLines(context, lines, file);
-		} catch (RuntimeException | IOException e) {
+		} catch (Exception e) {
 			throw new CoreException(
 					new Status(Status.ERROR, provider.getTodoTaskPluginId(), "Not able to visit resource", e));
 		}
