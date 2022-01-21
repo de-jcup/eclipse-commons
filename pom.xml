@@ -138,6 +138,8 @@
 						<configuration>
 							<!-- Prevent gpg from using pinentry programs -->
 							<gpgArguments>
+								<arg>--yes</arg>
+								<arg>--always-trust</arg>
 								<arg>--pinentry-mode</arg>
 								<arg>loopback</arg>
 							</gpgArguments>
