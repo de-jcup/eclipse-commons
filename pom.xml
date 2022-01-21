@@ -141,6 +141,7 @@
 								<arg>--yes</arg>
 								<arg>--always-trust</arg>
 								<arg>--pinentry-mode</arg>
+								<arg>--verbose</arg>
 								<arg>loopback</arg>
 							</gpgArguments>
 						</configuration>
