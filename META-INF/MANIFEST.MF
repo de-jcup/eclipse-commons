@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: JCup Eclipse Commons Testcase
-Bundle-SymbolicName: testcase.de.jcup.eclipse.commons;singleton:=true
+Bundle-Name: JCup Eclipse Commons
+Bundle-SymbolicName: de.jcup.eclipse.commons;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: testcase.de.jcup.eclipse.commons.TestcaseActivator
 Bundle-Vendor: Albert Tregnaghi

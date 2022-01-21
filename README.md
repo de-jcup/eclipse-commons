@@ -1,5 +1,6 @@
 # de-jcup-eclipse-commons
-[![Build status:](https://travis-ci.org/de-jcup/eclipse-commons.svg?branch=master)](https://travis-ci.org/de-jcup/eclipse-commons)
+[![Java CI with Maven](https://github.com/de-jcup/eclipse-commons/actions/workflows/maven.yml/badge.svg)](https://github.com/de-jcup/eclipse-commons/actions/workflows/maven.yml)
+
 *You will find the sources under https://github.com/de-jcup/eclipse-commons*
 
 A library containing reuseable eclipse solutions. This is a simple approach to resolve the
@@ -7,19 +8,26 @@ problem of too much copy & waste in de-jcup plugins. Some bigger and trick parts
 here as a simple library which can be used by plugins.
 
 ## Current version
-0.7.1
-- speedup workspace model build (possibility) #158
+1.0.0
+- changes to provide maven build with tycho
 
-## Howto use
-See Testcase plugin - there are all features used.
+## Howto develop/test
+For testing and development you can start it as a normal eclipse plugin inside your PDT
 
-## way to build
-- currently build-library.jardesc is used (ugly but it works)
-- version is not used (currently) in filenames to avoid version hopping (and versions
-  are not 100% setup because not build by tool like maven or gradle)
+## Howto use/integrate
+For integration you should use the library simply as a normal maven or gradle dependency.
+
+## Howto build with maven
+
+```
+./mvn clean verify
+```
 
 
 # History:
+0.7.1
+- speedup workspace model build (possibility) #158
+
 0.7.0
 - added SimpleStringUtils.trimRight impl
 - multiple changes for workspace model

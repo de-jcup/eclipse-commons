@@ -1,7 +1,7 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>eclipse.asciidoctor.editor</groupId>
-  <artifactId>testcase.de.jcup.eclipse.commons</artifactId>
+  <groupId>de.jcup.eclipse</groupId>
+  <artifactId>de.jcup.eclipse.commons</artifactId>
   <version>1.0.0</version>
   <packaging>eclipse-plugin</packaging>
 
@@ -15,7 +15,7 @@
 
 
   <properties>
-    <tycho.version>2.4.0</tycho.version>
+    <tycho.version>2.5.0</tycho.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
