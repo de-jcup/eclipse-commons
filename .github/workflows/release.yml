@@ -26,7 +26,7 @@ jobs:
         
     - name: Set Release version env variable
       run: |
-        echo ("RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)") >> $env:GITHUB_ENV
+        echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $env:GITHUB_ENV
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
