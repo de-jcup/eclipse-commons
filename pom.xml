@@ -1,7 +1,7 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>de.jcup.eclipse</groupId>
-	<artifactId>de.jcup.eclipse.commons</artifactId>
+	<groupId>de.jcup.eclipse.commons</groupId>
+	<artifactId>eclipse-commons</artifactId>
 	<version>1.0.0</version>
 	<packaging>eclipse-plugin</packaging>
 
@@ -35,11 +35,11 @@
 				<plugin>
 					<groupId>org.sonatype.plugins</groupId>
 					<artifactId>nexus-staging-maven-plugin</artifactId>
-					<version>1.6.8</version>
+					<version>1.6.7</version>
 					<extensions>true</extensions>
 					<configuration>
 						<serverId>ossrh</serverId>
-						<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+						<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
 						<autoReleaseAfterClose>true</autoReleaseAfterClose>
 					</configuration>
 				</plugin>
@@ -94,6 +94,34 @@
 						</environment>
 					</environments>
 				</configuration>
+			</plugin>
+
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
