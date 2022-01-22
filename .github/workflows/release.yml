@@ -46,7 +46,8 @@ jobs:
     #  run: cat ~/.m2/settings.xml
 
     - name: Publish to Apache Maven Central
-      run: mvn deploy
+      #run: mvn deploy # deploy to staging, so not closing, and can be dropped via Web UI
+      run: mvn deploy -P release #deploys and closes release on OSSRH. So not longer staging, cannot be deleted
       env:
         MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
         MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_CENTRAL_TOKEN }}
@@ -68,6 +69,6 @@ jobs:
             For more details please look at [Milestone ${{github.event.inputs.milestone-number}}]( https://github.com/de-jcup/eclipse-commons/milestone/${{github.event.inputs.milestone-number}}?closed=1)
             
             Artifact can be found at https://mvnrepository.com/artifact/de.jcup.eclipse.commons/eclipse-commons/${{ env.RELEASE_VERSION }}
-          draft: true
+          draft: false
           prerelease: false
     
