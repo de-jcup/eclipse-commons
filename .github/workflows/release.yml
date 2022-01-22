@@ -10,10 +10,11 @@ on:
         required: true
 
 jobs:
-  relese:
+  release:
     name: Create release and publish to maven central
     runs-on: ubuntu-latest
-
+    environment: Release
+    
     steps:
     - uses: actions/checkout@v2
       with:
@@ -26,7 +27,7 @@ jobs:
         
     - name: Set Release version env variable
       run: |
-        echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $env:GITHUB_ENV
+        echo "RELEASE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
@@ -41,8 +42,8 @@ jobs:
         gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}  # Value of the GPG private key to import
         gpg-passphrase:  MAVEN_GPG_PASSPHRASE # env variable for GPG private key passphrase
 
-    - name: Debug output
-      run: cat ~/.m2/settings.xml
+    #- name: Debug output
+    #  run: cat ~/.m2/settings.xml
 
     - name: Publish to Apache Maven Central
       run: mvn deploy
@@ -57,7 +58,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
       with:
-          tag_name: ${{ env.RELEASE_VERSION }}
+          tag_name: v${{ env.RELEASE_VERSION }}"
           commitish: master
           release_name: Version ${{ env.RELEASE_VERSION }}
           body: |
