@@ -11,6 +11,12 @@
 		</license>
 	</licenses>
 
+	<scm>
+		<connection>scm:git:git://github.com/de-jcup/eclipse-commons.git</connection>
+		<developerConnection>scm:git:ssh://github.com:de-jcup/eclipse-commons.git</developerConnection>
+		<url>http://github.com/de-jcup/eclipse-commons/tree/master</url>
+	</scm>
+
 	<developers>
 		<developer>
 			<id>de-jcup</id>
