@@ -1,4 +1,24 @@
 <project>
+
+	<name>eclipse-commons</name>
+	<description>A library containing reuseable eclipse solutions as a simple library which can be used by plugins.</description>
+	<url>https://github.com/de-jcup/eclipse-commons/</url>
+
+	<licenses>
+		<license>
+			<name>The Apache License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>de-jcup</id>
+			<name>Albert Tregnaghi</name>
+			<email>albert.tregnaghi@jcup.de</email>
+		</developer>
+	</developers>
+
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.jcup.eclipse.commons</groupId>
 	<artifactId>eclipse-commons</artifactId>
