@@ -8,8 +8,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextViewer;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
-import de.jcup.eclipse.commons.WordEndDetector;
-
 public class DisplayStringMultipleContentAssistSorter implements MultipleContentAssistSorter{
 
     private PrefixCalculator calculator;

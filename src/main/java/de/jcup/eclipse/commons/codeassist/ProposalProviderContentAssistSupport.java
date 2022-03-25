@@ -10,8 +10,6 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
 
 import de.jcup.eclipse.commons.PluginContextProvider;
-import de.jcup.eclipse.commons.codeassist.ProposalProvider;
-import de.jcup.eclipse.commons.codeassist.ProposalProviderSupport;
 
 public abstract class ProposalProviderContentAssistSupport implements ContentAssistSupport{
 

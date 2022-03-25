@@ -21,8 +21,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import de.jcup.eclipse.commons.resource.ResourceInputStreamProvider;
-
 public class EclipseResourceInputStreamProvider implements ResourceInputStreamProvider{
 
 	private String rootPath;

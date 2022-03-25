@@ -25,7 +25,6 @@ import java.io.InputStream;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 import de.jcup.eclipse.commons.resource.ResourceInputStreamProvider;
 
 public class TooltipTextSupportTest {
