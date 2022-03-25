@@ -53,7 +53,7 @@ public class ReducedBrowserInformationControl extends AbstractInformationControl
      * toolbar and uses hyperlink listener
      * 
      * @param parentShell
-     * @param plainTextToHTMLProvider if <code>null</code> a provider will be automatically created, so never null
+     * @param fallbackHTMLProvider if <code>null</code> a {@link DefaultPlainTextToHTMLProvider} instance will be used as a fallback
      */
     public ReducedBrowserInformationControl(Shell parentShell, PlainTextToHTMLProvider fallbackHTMLProvider) {
         super(parentShell, new ToolBarManager());
