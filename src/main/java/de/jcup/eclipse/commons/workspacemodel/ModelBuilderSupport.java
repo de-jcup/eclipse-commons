@@ -36,11 +36,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 
+import de.jcup.eclipse.commons.EclipseResourceHelper;
 import de.jcup.eclipse.commons.ui.EclipseUtil;
 
 /**
  * A full standalone workspace model builder solution which can be copied into a
- * plugin and works...<br>. Just create the an instance and call install on it.
+ * plugin and works...<br>
+ * . Just create the an instance and call install on it.
  * 
  * @author Albert Tregnaghi
  * @version 1.0
@@ -56,6 +58,7 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
 
     /**
      * Create support instance for given provider
+     * 
      * @param provider may not be <code>null</code>
      */
     public ModelBuilderSupport(ModelBuilderSupportProvider<M> provider) {
@@ -116,27 +119,27 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
         if (workspace == null) {
             return;
         }
-        
+
         Job job = new Job("Initialization of " + provider.getModelName()) {
 
             @Override
             protected IStatus run(IProgressMonitor monitor) {
-                    try {
-                        int worked=0;
-                        monitor.beginTask("Fetch and build existing resources", 2);
-                        doNoResourceChangedScan(initialContext, workspace.getRoot());
-                        monitor.worked(worked++);
-                        triggerModelBuildIfNecessary(initialContext);
-                        monitor.worked(worked++);
-                    } catch (CoreException e) {
-                        return new Status(Status.ERROR, provider.getPluginContextProvider().getPluginID(), "Was not able to fetch and build existing resources for "+provider.getModelName(), e);
-                    }
+                try {
+                    int worked = 0;
+                    monitor.beginTask("Fetch and build existing resources", 2);
+                    doNoResourceChangedScan(initialContext, workspace.getRoot());
+                    monitor.worked(worked++);
+                    triggerModelBuildIfNecessary(initialContext);
+                    monitor.worked(worked++);
+                } catch (CoreException e) {
+                    return new Status(Status.ERROR, provider.getPluginContextProvider().getPluginID(), "Was not able to fetch and build existing resources for " + provider.getModelName(), e);
+                }
 
                 return Status.OK_STATUS;
             }
         };
         job.schedule();
-        
+
     }
 
     void doNoResourceChangedScan(ProjectModelBuilderContext context, IContainer container) throws CoreException {
@@ -291,26 +294,35 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
         if (!file.isSynchronized(IResource.DEPTH_ZERO)) {
             return;
         }
-        
+
         int amountOfLinesToCheck = provider.getAmountOfLinesToCheck();
-        
+
         try (BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents(), "UTF-8"))) {
             String line = null;
-            int linesRead=0;
+            int linesRead = 0;
             List<String> list = new ArrayList<>();
             while ((line = br.readLine()) != null) {
                 linesRead++;
                 list.add(line);
-                if (linesRead==amountOfLinesToCheck) {
-                    /* -1 is all and so never reached. 1 is reached on first read... B and so on..*/
+                if (linesRead == amountOfLinesToCheck) {
+                    /*
+                     * -1 is all and so never reached. 1 is reached on first read... B and so on..
+                     */
                     break;
                 }
             }
             String[] lines = list.toArray(new String[list.size()]);
-            
+
             visitLines(context, lines, file);
-            
+
         } catch (RuntimeException | IOException e) {
+            if (EclipseResourceHelper.DEFAULT.isFileNotfoundException(e)) {
+                // IFile.exists() at the beginning of this method does not work properly when
+                // eclipse workspace is out of sync with real file system.
+                // To avoid annoying error dialogs in such cases, we handle this here again
+                context.resourcesToClean.add(file);
+                return;
+            }
             throw new CoreException(new Status(Status.ERROR, provider.getPluginContextProvider().getPluginID(), "Not able to visit resource", e));
         }
 

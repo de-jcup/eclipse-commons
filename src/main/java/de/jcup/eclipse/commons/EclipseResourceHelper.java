@@ -68,6 +68,37 @@ public class EclipseResourceHelper {
 
     private final IProgressMonitor NULL_MONITOR = new NullProgressMonitor();
 
+    /*
+     * This method is a dirty workaround to check if an exception is about a file
+     * not found problem. Eclipse does throw an internal resource exception
+     * (internal package) when a IFile content is fetched, based on a core
+     * exception, containing as cause an exception with a message
+     * "File not found: ..." There is just no dedicated FileNotFoundException or
+     * something ...
+     */
+    public boolean isFileNotfoundException(Exception e) {
+
+        if (e instanceof CoreException) {
+            CoreException ce = (CoreException) e;
+            IStatus status = ce.getStatus();
+            if (status == null) {
+                return false;
+            }
+            Throwable exception = status.getException();
+            if (exception == null) {
+                return false;
+            }
+            String message = exception.getMessage();
+            if (message == null) {
+                return false;
+            }
+            if (message.toLowerCase().indexOf("file not found") != -1) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public void addFileFilter(IProject newProject, String pattern, IProgressMonitor monitor) throws CoreException {
         FileInfoMatcherDescription matcherDescription = new FileInfoMatcherDescription(FILE_FILTER_ID, pattern);
         /*
@@ -96,56 +127,57 @@ public class EclipseResourceHelper {
         Path fullPath = new Path(portableFolderPath);
         return createFolder(fullPath, monitor);
     }
-    
-    
+
     /**
      * Reads file as text. when not existing or null an empty text will be returned
+     * 
      * @param file
      * @param provider
      * @param failureInfo
      * @return text, or <code>null</code>
      * @throws CoreException
      */
-    public String readAsText(IFile file, PluginContextProvider provider, String failureInfo) throws CoreException{
-        if (file==null) {
+    public String readAsText(IFile file, PluginContextProvider provider, String failureInfo) throws CoreException {
+        if (file == null) {
             return null;
         }
         if (!file.exists()) {
             return null;
         }
-        return readAsText(file.getContents(), provider,failureInfo);
+        return readAsText(file.getContents(), provider, failureInfo);
     }
-    
+
     /**
      * Reads stream as text. When stream null an empty text will be returned
+     * 
      * @param stream
      * @param provider
      * @param path
      * @return text, or <code>null</code>
-     * @throws CoreException 
+     * @throws CoreException
      */
-    public String readAsText(InputStream stream, PluginContextProvider provider,String path) throws CoreException{
-        if (stream==null) {
+    public String readAsText(InputStream stream, PluginContextProvider provider, String path) throws CoreException {
+        if (stream == null) {
             return null;
         }
-        
-        try(BufferedReader br = new BufferedReader(new InputStreamReader(stream))) {
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(stream))) {
             StringBuilder sb = new StringBuilder();
             String line = null;
-            boolean firstLine=true;
-            while ( (line = br.readLine())!=null) {
+            boolean firstLine = true;
+            while ((line = br.readLine()) != null) {
                 if (!firstLine) {
                     sb.append("\n");
                 }
-                firstLine=false;
+                firstLine = false;
                 sb.append(line);
             }
             return sb.toString();
-        }catch(Exception e) {
+        } catch (Exception e) {
             throw new CoreException(new Status(IStatus.ERROR, provider.getPluginID(), "Cannot get file in plugin from path:" + path, e));
         }
     }
-    
+
     public IFolder createFolder(IPath path, IProgressMonitor monitor) throws CoreException {
         if (monitor == null) {
             monitor = NULL_MONITOR;
@@ -234,14 +266,14 @@ public class EclipseResourceHelper {
     }
 
     public File getFileInPlugin(PluginContextProvider contextProvider, IPath path) throws CoreException {
-        if (path==null) {
+        if (path == null) {
             throw new CoreException(new Status(IStatus.ERROR, contextProvider.getPluginID(), "Path may not be null to get file in plugin:" + path));
         }
         try {
             AbstractUIPlugin activator = contextProvider.getActivator();
             Bundle bundle = activator.getBundle();
             URL installURL = bundle.getEntry(path.toString());
-            if (installURL==null) {
+            if (installURL == null) {
                 throw new CoreException(new Status(IStatus.ERROR, contextProvider.getPluginID(), "Install url may not be null for path:" + path));
             }
             URL localURL = FileLocator.toFileURL(installURL);
@@ -261,7 +293,7 @@ public class EclipseResourceHelper {
         }
         Bundle bundle = Platform.getBundle(pluginId);
         if (bundle == null) {
-            throw new IOException("Bundle not found:"+pluginId);
+            throw new IOException("Bundle not found:" + pluginId);
         }
         URL url = bundle.getEntry(path);
         if (url == null) {
@@ -271,13 +303,13 @@ public class EclipseResourceHelper {
             if (url == null) {
                 throw new IOException("Cannot find file at path:" + path);
             }
-    
+
         }
         URL resolvedFileURL = FileLocator.toFileURL(url);
         if (resolvedFileURL == null) {
             throw new FileNotFoundException("Cannot convert URL to file:" + resolvedFileURL);
         }
-    
+
         // We need to use the 3-arg constructor of URI in order to properly
         // escape file system chars
         URI resolvedURI;
@@ -377,7 +409,7 @@ public class EclipseResourceHelper {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         return IDE.openEditorOnFileStore(page, fileStore);
     }
-    
+
     public IEditorPart openInEditor(IFile file) throws PartInitException {
         IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
         return IDE.openEditor(page, file);
