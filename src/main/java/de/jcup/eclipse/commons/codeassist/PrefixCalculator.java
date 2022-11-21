@@ -11,6 +11,5 @@ public interface PrefixCalculator {
      * @param offset
      * @return text, never <code>null</code>
      */
-    
     public String calculate(String source, int offset);
 }
