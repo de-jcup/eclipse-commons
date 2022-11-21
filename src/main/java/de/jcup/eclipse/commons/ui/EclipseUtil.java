@@ -72,6 +72,10 @@ public class EclipseUtil {
         IDE.openEditor(page, file);
     }
 
+    public static ImageDescriptor createImageDescriptor(String path, PluginContextProvider provider) {
+        return createImageDescriptor(path, provider.getPluginID());
+    }
+    
     public static ImageDescriptor createImageDescriptor(String path, String pluginId) {
         if (path == null) {
             /* fall back if path null , so avoid NPE in eclipse framework */
