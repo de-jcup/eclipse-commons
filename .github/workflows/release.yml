@@ -31,7 +31,12 @@ jobs:
     - name: Iniitalze and calculate release version by MAVEN
       run: |
         echo "RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout)" >> $GITHUB_ENV
-
+    
+    - name: Cleanup testcase parts from library
+      run: |
+         rm ./plugin.xml
+         mv ./replacement_plugin.xml ./plugin.xml
+      
     - name: Package with Maven
       run: ./mvnw -B package --file pom.xml
 

@@ -23,6 +23,18 @@ jobs:
         
     - name: Check Maven version
       run: ./mvnw -version
+    
+    - name: Cleanup testcase parts from library
+      run: |
+         rm ./plugin.xml
+         mv ./replacement_plugin.xml ./plugin.xml
       
     - name: Build with Maven
       run: ./mvnw clean verify
+      
+    - name: Archive artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: target-jars
+        path: |
+            target/**/*.jar
