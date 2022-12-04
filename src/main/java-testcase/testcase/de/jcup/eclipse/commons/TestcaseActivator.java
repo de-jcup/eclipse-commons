@@ -9,6 +9,8 @@ import de.jcup.eclipse.commons.keyword.TooltipTextSupport;
 import de.jcup.eclipse.commons.resource.EclipseResourceInputStreamProvider;
 import de.jcup.eclipse.commons.tasktags.AbstractConfigurableTaskTagsSupportProvider;
 import de.jcup.eclipse.commons.templates.TemplateSupportProvider;
+import de.jcup.eclipse.commons.ui.ColorManager;
+import de.jcup.eclipse.commons.ui.DefaultColorManager;
 import de.jcup.eclipse.commons.ui.PluginContextProviderRegistry;
 import testcase.de.jcup.eclipse.commons.tasktags.TestcaseTaskTagsSupportProvider;
 import testcase.de.jcup.eclipse.commons.template.TestCaseTemplateSupportConfig;
@@ -30,7 +32,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 
 	private AbstractConfigurableTaskTagsSupportProvider taskSupportProvider;
 
-	private TestCaseColorManager testCaseColorManager;
+	private ColorManager testCaseColorManager;
 
 	private TestCaseModelSupportProvider testCaseModelSupportProvider;
 
@@ -38,7 +40,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 	 * The constructor
 	 */
 	public TestcaseActivator() {
-		testCaseColorManager = new TestCaseColorManager();
+		testCaseColorManager = new DefaultColorManager();
 		taskSupportProvider = new TestcaseTaskTagsSupportProvider(this) ;
 		testCaseModelSupportProvider = new TestCaseModelSupportProvider(this);
 		templateSupportProvider = new TemplateSupportProvider(new TestCaseTemplateSupportConfig(),this);
@@ -50,7 +52,7 @@ public class TestcaseActivator extends AbstractUIPlugin implements PluginContext
 		return testCaseModelSupportProvider;
 	}
 	
-	public TestCaseColorManager getTestCaseColorManager() {
+	public ColorManager getColorManager() {
 		return testCaseColorManager;
 	}
 

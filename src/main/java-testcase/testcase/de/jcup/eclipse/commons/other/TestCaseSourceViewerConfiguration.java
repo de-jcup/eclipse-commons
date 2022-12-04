@@ -19,7 +19,7 @@ import org.eclipse.swt.widgets.Display;
 import de.jcup.eclipse.commons.codeassist.MultipleContentAssistProcessor;
 import de.jcup.eclipse.commons.presentation.PresentationSupport;
 import de.jcup.eclipse.commons.templates.TemplateSupport;
-import testcase.de.jcup.eclipse.commons.TestCaseColorManager;
+import de.jcup.eclipse.commons.ui.ColorManager;
 import testcase.de.jcup.eclipse.commons.TestcaseActivator;
 import testcase.de.jcup.eclipse.commons.codeassist.TestcaseContentAssistProcessor;
 import testcase.de.jcup.eclipse.commons.keywords.TestCaseDocumentKeywordTextHover;
@@ -89,15 +89,15 @@ public class TestCaseSourceViewerConfiguration extends SourceViewerConfiguration
     }
 
     private void addPresentation(PresentationReconciler reconciler, String id, RGB rgb, int style) {
-        TestCaseColorManager colorManager = getColorManager();
+        ColorManager colorManager = getColorManager();
         TextAttribute textAttribute = new TextAttribute(colorManager.getColor(rgb), defaultTextAttribute.getBackground(), style);
         PresentationSupport presentation = new PresentationSupport(textAttribute);
         reconciler.setDamager(presentation, id);
         reconciler.setRepairer(presentation, id);
     }
 
-    protected TestCaseColorManager getColorManager() {
-        return TestcaseActivator.getDefault().getTestCaseColorManager();
+    protected ColorManager getColorManager() {
+        return TestcaseActivator.getDefault().getColorManager();
     }
 
     

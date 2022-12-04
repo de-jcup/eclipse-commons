@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added 
 - introduce `CHANGELOG.md`
+- added ColorManager and implementation + some minor rules, detectors etc.
 
 ### Fixed
 - Handle "File not found" errors on building model #45
