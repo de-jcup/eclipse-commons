@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -335,7 +336,19 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
                 context.resourcesToClean.add(file);
                 return;
             }
-            throw new CoreException(new Status(Status.ERROR, provider.getPluginContextProvider().getPluginID(), "Not able to visit resource", e));
+            throw new CoreException(new Status(Status.ERROR, provider.getPluginContextProvider().getPluginID(), "Not able to visit model resource", e));
+        } catch (CoreException coreException) {
+            IStatus status = coreException.getStatus();
+            if (status != null) {
+                int code = status.getCode();
+                if (code == IResourceStatus.RESOURCE_NOT_FOUND) {
+                    // in this case we we only log but do not throw an exception
+                    Status triggerSTatus = new Status(Status.WARNING, provider.getPluginContextProvider().getPluginID(), "Not able to visit model resource:"+ file, coreException);
+                    ResourcesPlugin.getPlugin().getLog().log(triggerSTatus);
+                    return;
+                }
+            }
+            throw coreException;
         }
 
     }
