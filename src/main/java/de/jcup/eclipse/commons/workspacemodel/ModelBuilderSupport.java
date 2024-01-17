@@ -143,11 +143,23 @@ public class ModelBuilderSupport<M> implements IResourceChangeListener {
     }
 
     void doNoResourceChangedScan(ProjectModelBuilderContext context, IContainer container) throws CoreException {
+        if (container == null) {
+            return;
+        }
         if (!container.isAccessible()) {
             return;
         }
+        if (!container.exists()) {
+            return;
+        }
         IResource[] members = container.members();
+        if (members == null) {
+            return;
+        }
         for (IResource member : members) {
+            if (member == null || !member.exists()) {
+                continue;
+            }
             if (member instanceof IContainer) {
                 doNoResourceChangedScan(context, (IContainer) member);
             } else if (member instanceof IFile) {
