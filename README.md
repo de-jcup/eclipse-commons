@@ -40,3 +40,10 @@ implementation("de.jcup.eclipse.commons:eclipse-commons:1.1.1")
 ./mvn clean verify
 ```
 
+## How to build locally without maven
+If there is a need - e.g. tycho makes problems but the library is needed urgently - there is a 
+workaround possible with `build-library-local.jardesc`.
+
+It will create the library from IDE inside build/eclipse-commons.jar 
+The jar will contain the `changelog.md` to make it clear that there are unreleased parts inside 
+
