@@ -28,6 +28,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceStatus;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -353,7 +354,20 @@ public class TaskTagsSupport implements IResourceChangeListener {
             String[] lines = list.toArray(new String[list.size()]);
             visitLines(context, lines, file);
         } catch (Exception e) {
-            throw new CoreException(new Status(Status.ERROR, provider.getTodoTaskPluginId(), "Not able to visit resource", e));
+            if (e instanceof CoreException) {
+                CoreException coreException = (CoreException) e;
+                IStatus status = coreException.getStatus();
+                if (status!=null) {
+                    int code = status.getCode();
+                    if (code == IResourceStatus.RESOURCE_NOT_FOUND) {
+                        // in this case we we only log but do not throw an exception
+                        Status warnStatus = new Status(Status.WARNING, provider.getTodoTaskPluginId(), "Not able to visit task resource:"+ file, coreException);
+                        ResourcesPlugin.getPlugin().getLog().log(warnStatus);
+                        return;
+                    }
+                }
+            }
+            throw new CoreException(new Status(Status.ERROR, provider.getTodoTaskPluginId(), "Not able to visit task resource", e));
         }
 
     }
